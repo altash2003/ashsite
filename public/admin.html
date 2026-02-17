@@ -1,250 +1,146 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNT Admin | Ultimate</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* [YOUR ORIGINAL CSS - CONDENSED FOR LENGTH] */
-        :root { --bg-body:#0f172a; --bg-panel:#1e293b; --primary:#6366f1; --text-muted:#94a3b8; --border:rgba(255,255,255,0.1); }
-        * { margin:0; padding:0; box-sizing:border-box; font-family:'Outfit', sans-serif; }
-        body { background:var(--bg-body); color:#f8fafc; height:100vh; display:flex; overflow:hidden; }
-        .sidebar { width:260px; background:#111827; border-right:1px solid var(--border); padding:1.5rem; }
-        .main-content { flex:1; padding:2rem; overflow-y:auto; }
-        .header { display:flex; justify-content:space-between; margin-bottom:2rem; }
-        .hidden { display:none !important; }
-        .nav-link { padding:12px; margin-bottom:5px; border-radius:12px; color:var(--text-muted); cursor:pointer; display:flex; gap:10px; align-items:center; }
-        .nav-link.active, .nav-link:hover { background:rgba(99,102,241,0.1); color:var(--primary); }
-        .panel { background:var(--bg-panel); padding:2rem; border-radius:12px; border:1px solid var(--border); margin-bottom: 2rem;}
-        .input-group { margin-bottom:1rem; }
-        .input-control { width:100%; padding:10px; background:#0f172a; border:1px solid var(--border); color:white; border-radius:8px; }
-        .btn-primary { background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; width:100%; }
-        .table-container { background:var(--bg-panel); border-radius:12px; overflow-x:auto; }
-        table { width:100%; border-collapse:collapse; }
-        th, td { padding:15px; text-align:center; border-bottom:1px solid var(--border); }
-        th { background:rgba(0,0,0,0.2); color:var(--text-muted); font-size:0.8rem; text-transform:uppercase; }
-        .preview-img { max-width: 100%; height: 100px; object-fit: cover; border-radius: 8px; margin-top: 10px; display: none; }
-        .file-box { border: 2px dashed var(--border); padding: 20px; text-align: center; cursor: pointer; border-radius: 8px; }
-        /* Modal & Stats */
-        .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; justify-content:center; align-items:center; z-index:999; }
-        .modal-content { background:var(--bg-panel); padding:2rem; width:600px; border-radius:12px; border:1px solid var(--primary); }
-        .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:2rem; }
-        .stat-card { background:var(--bg-panel); padding:1.5rem; border-radius:12px; border:1px solid var(--border); }
-        .stat-val { font-size:1.8rem; font-weight:700; margin-top:5px; }
-    </style>
-</head>
-<body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    const socket = io();
 
-    <nav class="sidebar">
-        <div style="margin-bottom:2rem; font-weight:700; font-size:1.2rem;">StickAdmin <span style="font-size:0.7rem; background:rgba(99,102,241,0.2); padding:2px 6px; border-radius:4px;">LIVE</span></div>
-        <div class="nav-link active" onclick="setView('dashboard', this)"><i class="fas fa-chart-line"></i> Dashboard</div>
-        <div class="nav-link" onclick="setView('announcements', this)"><i class="fas fa-bullhorn"></i> Announcements</div>
-        <div class="nav-link" onclick="setView('players', this)"><i class="fas fa-users"></i> Players</div>
-        <div class="nav-link" onclick="setView('store', this)"><i class="fas fa-store"></i> Store</div>
-        <div class="nav-link" onclick="setView('auction', this)"><i class="fas fa-gavel"></i> Auctions</div>
-        <div class="nav-link" onclick="setView('codes', this)"><i class="fas fa-ticket-alt"></i> Giftcodes</div>
-    </nav>
+    // Local State (Synced from Server)
+    let players = [];
+    let storeItems = [];
+    let auctions = [];
+    let giftBatches = [];
+    let announcements = [];
+    let systemLogs = [];
 
-    <div class="main-content">
-        <div id="view-dashboard">
-            <div class="header"><h2>Overview</h2></div>
-            <div class="stats-grid">
-                <div class="stat-card"><div>Players</div><div class="stat-val" id="stat-players">0</div></div>
-                <div class="stat-card"><div>Revenue</div><div class="stat-val" style="color:#10b981" id="stat-rev">$0</div></div>
-                <div class="stat-card"><div>Auctions</div><div class="stat-val" style="color:#f59e0b" id="stat-auc">0</div></div>
-            </div>
-            <div class="panel"><h3>Live Logs</h3><div id="logs-box" style="margin-top:1rem; font-family:monospace; color:#94a3b8; font-size:0.9rem;"></div></div>
-        </div>
+    // --- SOCKET LISTENERS ---
+    socket.on('sync:full_data', (db) => {
+        players = db.players;
+        storeItems = db.storeItems;
+        auctions = db.auctions;
+        giftBatches = db.giftBatches;
+        announcements = db.announcements;
+        systemLogs = db.logs;
+        
+        // Refresh whatever view is active, or all
+        refreshAllViews();
+    });
 
-        <div id="view-announcements" class="hidden">
-            <div class="header"><h2>Announcements</h2></div>
-            <div class="panel">
-                <div class="file-box" onclick="document.getElementById('file-news').click()">
-                    <i class="fas fa-image"></i> Click to Upload Image
-                    <input type="file" id="file-news" hidden onchange="handleFile(this, 'preview-news', 'news-base64')">
-                    <img id="preview-news" class="preview-img">
-                </div>
-                <div class="input-group"><input type="text" id="news-title" class="input-control" placeholder="Title"></div>
-                <div class="input-group"><textarea id="news-body" class="input-control" placeholder="Content..."></textarea></div>
-                <button class="btn-primary" onclick="postNews()">Publish</button>
-            </div>
-            <div class="table-container"><table><tbody id="news-list"></tbody></table></div>
-        </div>
+    function refreshAllViews() {
+        renderPlayers(document.querySelector('.input-control[placeholder*="Search"]').value || '');
+        renderStore(document.querySelector('select[onchange="filterStore(this.value)"]').value);
+        renderAuctions(document.querySelector('select[onchange="filterAuctions(this.value)"]').value);
+        renderGiftBatches();
+        renderAnnouncements();
+        updateDashboard();
+    }
 
-        <div id="view-players" class="hidden">
-            <div class="header"><h2>Players</h2></div>
-            <div class="table-container"><table><thead><tr><th>User</th><th>Credits</th><th>Status</th><th>Action</th></tr></thead><tbody id="player-list"></tbody></table></div>
-        </div>
+    // --- OVERRIDES FOR YOUR EXISTING FUNCTIONS ---
+    // These functions now EMIT events to the server instead of modifying local arrays
 
-        <div id="view-store" class="hidden">
-            <div class="header"><h2>Store</h2></div>
-            <div class="panel">
-                <div class="file-box" onclick="document.getElementById('file-store').click()">
-                    <i class="fas fa-camera"></i> Upload Item Image
-                    <input type="file" id="file-store" hidden onchange="handleFile(this, 'preview-store', 'store-base64')">
-                    <img id="preview-store" class="preview-img">
-                </div>
-                <div class="input-group"><input type="text" id="store-name" class="input-control" placeholder="Item Name"></div>
-                <div style="display:flex; gap:10px;">
-                    <input type="number" id="store-price" class="input-control" placeholder="Price">
-                    <input type="number" id="store-stock" class="input-control" placeholder="Stock">
-                </div>
-                <br>
-                <button class="btn-primary" onclick="addItem()">Add to Store</button>
-            </div>
-            <div class="table-container"><table><thead><tr><th>Item</th><th>Price</th><th>Stock</th><th>Status</th></tr></thead><tbody id="store-list"></tbody></table></div>
-        </div>
-
-        <div id="view-auction" class="hidden">
-            <div class="header"><h2>Auctions</h2></div>
-            <div class="panel">
-                <div class="file-box" onclick="document.getElementById('file-auc').click()">
-                    <i class="fas fa-camera"></i> Upload Auction Image
-                    <input type="file" id="file-auc" hidden onchange="handleFile(this, 'preview-auc', 'auc-base64')">
-                    <img id="preview-auc" class="preview-img">
-                </div>
-                <div class="input-group"><input type="text" id="auc-name" class="input-control" placeholder="Item Name"></div>
-                <div style="display:flex; gap:10px;">
-                    <input type="number" id="auc-bid" class="input-control" placeholder="Start Bid">
-                    <input type="number" id="auc-dur" class="input-control" placeholder="Hours">
-                </div>
-                <br>
-                <button class="btn-primary" onclick="addAuc()">Start Auction</button>
-            </div>
-            <div class="table-container"><table><thead><tr><th>Item</th><th>Current Bid</th><th>Bidder</th></tr></thead><tbody id="auc-list"></tbody></table></div>
-        </div>
-
-        <div id="view-codes" class="hidden">
-            <div class="header"><h2>Giftcodes</h2></div>
-            <div class="panel">
-                <div style="display:flex; gap:10px; margin-bottom:10px;">
-                    <select id="gc-type" class="input-control"><option value="Credits">Credits</option><option value="Crystals">Crystals</option></select>
-                    <input type="number" id="gc-amt" class="input-control" value="100">
-                    <input type="number" id="gc-qty" class="input-control" value="10">
-                </div>
-                <button class="btn-primary" onclick="genCodes()">Generate Batch</button>
-            </div>
-            <div class="table-container"><table><thead><tr><th>Batch</th><th>Type</th><th>Total</th><th>Redeemed</th></tr></thead><tbody id="gc-list"></tbody></table></div>
-        </div>
-    </div>
-
-    <input type="hidden" id="news-base64"><input type="hidden" id="store-base64"><input type="hidden" id="auc-base64">
-
-    <div id="modal-player" class="modal-overlay hidden">
-        <div class="modal-content">
-            <h3>Edit Player</h3>
-            <div class="input-group"><label>Credits</label><input type="number" id="edit-credits" class="input-control"></div>
-            <button class="btn-primary" onclick="savePlayer()">Save</button>
-            <button class="btn-primary" style="background:#ef4444; margin-top:10px;" onclick="document.getElementById('modal-player').classList.add('hidden')">Cancel</button>
-        </div>
-    </div>
-
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io();
-        let data = {};
-        let editId = null;
-
-        // Sync
-        socket.on('init_data', d => { data = d; renderAll(); });
-        socket.on('sync:players', d => { data.players = d; renderAll(); });
-        socket.on('sync:store', d => { data.storeItems = d; renderAll(); });
-        socket.on('sync:auctions', d => { data.auctions = d; renderAll(); });
-        socket.on('sync:giftcodes', d => { data.giftBatches = d; renderAll(); });
-        socket.on('sync:announcements', d => { data.announcements = d; renderAll(); });
-        socket.on('sync:logs', logs => {
-            const box = document.getElementById('logs-box'); box.innerHTML = '';
-            logs.slice(0,8).forEach(l => box.innerHTML += `<div>[${new Date(l.time).toLocaleTimeString()}] ${l.msg}</div>`);
+    function updateDashboard() {
+        document.getElementById('stat-players').innerText = players.length;
+        document.getElementById('stat-auctions').innerText = auctions.filter(a => a.status === 'Active').length;
+        let rev = storeItems.filter(i => i.status === 'Sold Out').reduce((acc, curr) => acc + parseInt(curr.price), 0);
+        document.getElementById('stat-revenue').innerText = '$' + rev.toLocaleString();
+        
+        const logContainer = document.getElementById('system-log');
+        logContainer.innerHTML = '';
+        systemLogs.slice(0, 8).forEach(log => {
+            const time = new Date(log.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            logContainer.innerHTML += `<p><span class="log-time">[${time}]</span> ${log.msg}</p>`;
         });
+    }
 
-        function renderAll() {
-            document.getElementById('stat-players').innerText = data.players.length;
-            document.getElementById('stat-auc').innerText = data.auctions.length;
-            
-            // Players
-            const pl = document.getElementById('player-list'); pl.innerHTML = '';
-            data.players.forEach(p => pl.innerHTML += `<tr><td>${p.user}</td><td>${p.credits}</td><td>${p.status}</td><td><button onclick="editP(${p.id})">Edit</button></td></tr>`);
-            
-            // Store
-            const sl = document.getElementById('store-list'); sl.innerHTML = '';
-            data.storeItems.forEach(i => sl.innerHTML += `<tr><td><img src="${i.img}" style="width:30px"> ${i.name}</td><td>${i.price}</td><td>${i.stock}</td><td>${i.status}</td></tr>`);
+    // PLAYERS
+    function savePlayerChanges() {
+        let p = players.find(x => x.id === editingPlayerId);
+        const updatedData = {
+            id: editingPlayerId,
+            credits: parseInt(document.getElementById('modal-credits').value),
+            crystals: parseInt(document.getElementById('modal-crystals').value),
+            status: document.getElementById('modal-status').value
+        };
+        socket.emit('admin:update_player', updatedData);
+        closeModal('player-modal');
+    }
 
-            // Auctions
-            const al = document.getElementById('auc-list'); al.innerHTML = '';
-            data.auctions.forEach(a => al.innerHTML += `<tr><td><img src="${a.img}" style="width:30px"> ${a.item}</td><td>${a.bid}</td><td>${a.bidder||'-'}</td></tr>`);
-
-            // News
-            const nl = document.getElementById('news-list'); nl.innerHTML = '';
-            data.announcements.forEach(n => nl.innerHTML += `<tr><td><img src="${n.img}" style="width:30px"></td><td>${n.title}</td></tr>`);
-
-            // Codes
-            const gl = document.getElementById('gc-list'); gl.innerHTML = '';
-            data.giftBatches.forEach(g => gl.innerHTML += `<tr><td>${g.id}</td><td>${g.type} (${g.amount})</td><td>${g.total}</td><td>${g.redeemedCount}</td></tr>`);
+    // STORE
+    function addNewStoreItem() {
+        const name = document.getElementById('new-item-name').value;
+        const price = document.getElementById('new-item-price').value;
+        const stock = document.getElementById('new-item-stock').value;
+        const imgPreview = document.getElementById('store-preview');
+        const imgSrc = imgPreview.style.display === 'block' ? imgPreview.src : 'https://placehold.co/100x100/gray/white?text=No+Img';
+        
+        if(name && price) {
+            let status = parseInt(stock) > 0 ? 'Available' : 'Sold Out';
+            socket.emit('admin:add_item', { 
+                id: Date.now(), img: imgSrc, name, price, stock, status, soldAt: null 
+            });
+            // Clear form
+            document.getElementById('new-item-name').value = "";
         }
+    }
+    function cancelStoreItem(id) { if(confirm("Delete item?")) socket.emit('admin:delete_item', id); }
+    function markAsSold(id) { socket.emit('admin:mark_sold', id); }
 
-        // Actions
-        function handleFile(input, imgId, hiddenId) {
-            const file = input.files[0];
-            if(file){
-                const reader = new FileReader();
-                reader.onload = e => {
-                    document.getElementById(imgId).src = e.target.result;
-                    document.getElementById(imgId).style.display = 'block';
-                    document.getElementById(hiddenId).value = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
+    // AUCTIONS
+    function addAuction() {
+        const name = document.getElementById('auc-name').value;
+        const bid = document.getElementById('auc-bid').value;
+        const duration = document.getElementById('auc-duration').value;
+        const imgPreview = document.getElementById('auc-preview');
+        const imgSrc = imgPreview.style.display === 'block' ? imgPreview.src : 'https://placehold.co/100x100/gray/white?text=No+Img';
+        
+        if(name && bid && duration) {
+            let endTime = Date.now() + (parseInt(duration) * 60 * 60 * 1000);
+            socket.emit('admin:create_auction', { 
+                id: Date.now(), img: imgSrc, item: name, bid: bid, bidder: null, status: 'Active', endTime: endTime, endedAt: null 
+            });
         }
+    }
+    function cancelAuction(id) { if(confirm("Cancel Auction?")) socket.emit('admin:cancel_auction', id); }
 
-        function postNews() {
-            const title = document.getElementById('news-title').value;
-            const img = document.getElementById('news-base64').value || 'https://placehold.co/100';
-            if(title) socket.emit('admin:post_announcement', { id: Date.now(), title, img, content: document.getElementById('news-body').value });
-        }
+    // ANNOUNCEMENTS
+    function postAnnouncement() {
+        const title = document.getElementById('announce-title').value;
+        const content = document.getElementById('announce-body').value;
+        const imgPreview = document.getElementById('announce-preview');
+        const imgSrc = imgPreview.style.display === 'block' ? imgPreview.src : 'https://placehold.co/600x200/291e3b/FFF?text=News';
 
-        function addItem() {
-            const name = document.getElementById('store-name').value;
-            const price = document.getElementById('store-price').value;
-            const stock = document.getElementById('store-stock').value;
-            const img = document.getElementById('store-base64').value || 'https://placehold.co/100';
-            if(name) socket.emit('admin:add_item', { id:Date.now(), name, price, stock, img, status:'Available' });
+        if(title && content) {
+            socket.emit('admin:post_announcement', {
+                id: Date.now(), img: imgSrc, title, content, likes: 0, dislikes: 0, comments: []
+            });
         }
+    }
 
-        function addAuc() {
-            const name = document.getElementById('auc-name').value;
-            const bid = document.getElementById('auc-bid').value;
-            const img = document.getElementById('auc-base64').value || 'https://placehold.co/100';
-            if(name) socket.emit('admin:create_auction', { id:Date.now(), item:name, bid, img, status:'Active', bidder:null });
-        }
+    // GIFTCODES
+    function generateBatch() {
+        const type = document.getElementById('gc-type').value;
+        const qty = parseInt(document.getElementById('gc-qty').value);
+        const amt = document.getElementById('gc-amount').value;
+        const prefix = document.getElementById('gc-prefix').value || 'SNT-';
+        const batchId = '#BATCH_' + Math.floor(Math.random() * 999);
+        
+        socket.emit('admin:generate_codes', {
+            id: batchId, type, prefix, amount: amt, total: qty
+        });
+    }
 
-        function genCodes() {
-            const type = document.getElementById('gc-type').value;
-            const amt = document.getElementById('gc-amt').value;
-            const qty = document.getElementById('gc-qty').value;
-            let codes = [];
-            for(let i=0; i<qty; i++) codes.push({ code: 'SNT-'+Math.random().toString(36).substr(2,5).toUpperCase(), redeemed:false });
-            socket.emit('admin:generate_codes', { id: '#B'+Math.floor(Math.random()*999), type, amount:amt, total:qty, redeemedCount:0, codes });
-        }
+    // --- UTILS (Keep your existing UI helpers) ---
+    // (Copy the renderPlayers, renderStore, renderAuctions, renderGiftBatches, previewImage, switchView, closeModal functions from your original file here.
+    //  Just make sure they use the global arrays defined at the top.)
+    
+    // Minimal Example of one render function to show it uses the global 'players' array:
+    function renderPlayers(filter='') {
+        const tbody = document.getElementById('player-table-body');
+        tbody.innerHTML = '';
+        players.forEach(p => {
+            if(!p.user.toLowerCase().includes(filter.toLowerCase())) return;
+            let statusClass = p.status === 'Active' ? 'status-active' : (p.status === 'Banned' ? 'status-banned' : 'status-offline');
+            tbody.innerHTML += `<tr><td>#${p.id}</td><td>${p.user}</td><td>***</td><td style="color:#fbbf24">${p.credits}</td><td style="color:var(--crystal)">${p.crystals}</td><td><span class="status-badge ${statusClass}">${p.status}</span></td><td><button class="btn-sm btn-edit" onclick="openPlayerEdit(${p.id})">Edit</button></td></tr>`;
+        });
+    }
 
-        function editP(id) {
-            editId = id;
-            document.getElementById('modal-player').classList.remove('hidden');
-        }
-        function savePlayer() {
-            const p = data.players.find(x => x.id === editId);
-            p.credits = parseInt(document.getElementById('edit-credits').value);
-            socket.emit('admin:update_player', p);
-            document.getElementById('modal-player').classList.add('hidden');
-        }
-
-        function setView(v, el) {
-            document.querySelectorAll('.main-content > div').forEach(x => x.classList.add('hidden'));
-            document.getElementById('view-'+v).classList.remove('hidden');
-            document.querySelectorAll('.nav-link').forEach(x => x.classList.remove('active'));
-            el.classList.add('active');
-        }
-    </script>
-</body>
-</html>
+    // Copy the rest of your render logic exactly as is...
+    // [PASTE THE REST OF YOUR RENDER FUNCTIONS HERE]
+</script>
