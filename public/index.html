@@ -3,91 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stick N' Trade | Ultimate App</title>
+    <title>Stick N' Trade | Player App</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root { --bg-body: #0f172a; --bg-card: #1e293b; --primary: #6366f1; --primary-glow: rgba(99, 102, 241, 0.5); --text-main: #f8fafc; --text-muted: #94a3b8; --reward-gold: #fbbf24; --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        :root { --bg-body: #0f172a; --bg-card: #1e293b; --primary: #6366f1; --text-main: #f8fafc; --text-muted: #94a3b8; --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-        body { background-color: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; background-image: radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 20%), radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.15) 0%, transparent 20%); }
+        body { background-color: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; }
         .hidden { display: none !important; }
         .btn { padding: 10px 20px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; transition: var(--transition); }
-        .btn-primary { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; box-shadow: 0 4px 15px var(--primary-glow); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--primary-glow); }
+        .btn-primary { background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%); color: white; }
         #dashboard-container { display: flex; height: 100vh; }
-        .sidebar { width: 100px; padding: 2rem 0; display: flex; flex-direction: column; align-items: center; border-right: 1px solid rgba(255,255,255,0.05); background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(10px); }
-        .logo-mark { width: 50px; height: 50px; background: var(--primary); border-radius: 12px; display: grid; place-items: center; font-weight: 800; font-size: 1.2rem; margin-bottom: 3rem; }
-        .nav-icon { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; color: var(--text-muted); margin-bottom: 1rem; cursor: pointer; transition: var(--transition); font-size: 1.2rem; position: relative; }
-        .nav-icon.active, .nav-icon:hover { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+        .sidebar { width: 100px; padding: 2rem 0; display: flex; flex-direction: column; align-items: center; background: rgba(15, 23, 42, 0.5); border-right: 1px solid rgba(255,255,255,0.05); }
+        .nav-icon { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; color: var(--text-muted); margin-bottom: 1rem; cursor: pointer; font-size: 1.2rem; }
+        .nav-icon.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
         .main-area { flex: 1; padding: 2rem 3rem; overflow-y: auto; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-        .wallet-pill { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 50px; padding: 8px 10px 8px 25px; display: flex; align-items: center; gap: 20px; }
-        .currency { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 0.9rem; }
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
-        .card-base { background: var(--bg-card); border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); transition: var(--transition); position: relative; }
-        .card-base:hover { transform: translateY(-8px); border-color: rgba(255,255,255,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
-        /* REWARDS */
-        #rewards-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: var(--transition); }
+        .wallet-pill { background: rgba(255,255,255,0.03); border-radius: 50px; padding: 8px 20px; font-weight: 600; color: #fbbf24; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        .card-base { background: var(--bg-card); border-radius: 20px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); position: relative; }
+        
+        /* REWARDS MODAL */
+        #rewards-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: var(--transition); }
         #rewards-modal.open { opacity: 1; pointer-events: all; }
-        .rewards-card { background: #1e1b2e; width: 900px; max-width: 95%; border-radius: 24px; overflow: hidden; transform: scale(0.9); transition: var(--transition); }
-        #rewards-modal.open .rewards-card { transform: scale(1); }
-        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; padding: 2rem; background: radial-gradient(circle at center, #2e2459 0%, #1e1b2e 100%); }
-        .day-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1rem 0.5rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .day-card.active { background: linear-gradient(180deg, #fbbf24 0%, #d97706 100%); transform: scale(1.1); z-index: 2; border: 2px solid #fef3c7; color: #1e1b2e; }
+        .rewards-card { background: #1e1b2e; width: 500px; border-radius: 24px; text-align: center; overflow: hidden; }
     </style>
 </head>
 <body>
     <div id="dashboard-container">
         <nav class="sidebar">
-            <div class="logo-mark">S</div>
-            <div class="nav-icon active" onclick="switchTab('home', this)" title="Home"><i class="fas fa-home"></i></div>
-            <div class="nav-icon" onclick="switchTab('store', this)" title="Store"><i class="fas fa-store"></i></div>
+            <div style="width: 50px; height: 50px; background: var(--primary); border-radius: 12px; margin-bottom: 3rem; display: grid; place-items: center; font-weight: 800;">S</div>
+            <div class="nav-icon active" onclick="switchTab('home', this)"><i class="fas fa-home"></i></div>
+            <div class="nav-icon" onclick="switchTab('casino', this)"><i class="fas fa-dice"></i></div>
+            <div class="nav-icon" onclick="switchTab('auction', this)"><i class="fas fa-gavel"></i></div>
+            <div class="nav-icon" onclick="switchTab('store', this)"><i class="fas fa-store"></i></div>
         </nav>
 
         <main class="main-area">
             <header class="top-bar">
                 <div>
-                    <h2 id="page-title">Dashboard</h2>
-                    <p id="page-desc" style="color: var(--text-muted);">User: <span id="user-display" style="color: var(--primary);">ashleychan</span></p>
+                    <h2>Dashboard</h2>
+                    <p style="color: var(--text-muted);">Player: <span id="user-display" style="color: var(--primary);">Loading...</span></p>
                 </div>
-                <div class="wallet-pill">
-                    <div class="currency credits" style="color:#fbbf24"><i class="fas fa-coins"></i> <span id="credit-display">Loading...</span> Credits</div>
-                    <div class="currency crystals"><i class="fas fa-gem" style="color: #d8b4fe;"></i> <span id="crystal-display">...</span></div>
-                </div>
+                <div class="wallet-pill"><i class="fas fa-coins"></i> <span id="credit-display">0</span> Credits</div>
             </header>
 
             <section id="sec-home" class="page-section">
-                <div style="background: linear-gradient(135deg, #1e293b, #0f172a); padding: 3rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem;">
-                    <h1>Featured Event</h1>
-                    <p style="color: #94a3b8; max-width: 500px; margin: 10px 0 20px;">The High Stakes Tournament is live! Claim your daily rewards now.</p>
+                <div style="background: linear-gradient(135deg, #1e293b, #0f172a); padding: 3rem; border-radius: 20px; margin-bottom: 2rem;">
+                    <h1>Welcome Back!</h1>
+                    <p style="color: #94a3b8; margin: 10px 0 20px;">Check the Auction House for new rare items.</p>
+                    <button class="btn btn-primary" onclick="openRewards()">Daily Reward</button>
                 </div>
-                
-                <h3 style="margin-bottom: 1rem;">Quick Actions</h3>
-                <div class="grid-4">
-                    <div class="card-base" style="padding: 1.5rem; text-align: center; cursor: pointer;" onclick="openRewards()">
-                        <i class="fas fa-calendar-check" style="font-size: 2rem; color: #fbbf24; margin-bottom: 10px;"></i>
-                        <h4>Daily Reward</h4>
+            </section>
+
+            <section id="sec-auction" class="page-section hidden">
+                <h3 style="margin-bottom: 1rem;">Live Auctions</h3>
+                <div class="grid-3" id="auction-grid">
                     </div>
-                </div>
+            </section>
+
+            <section id="sec-store" class="page-section hidden">
+                <h3 style="margin-bottom: 1rem;">Item Store</h3>
+                <div class="grid-3" id="store-grid">
+                    </div>
+            </section>
+            
+            <section id="sec-casino" class="page-section hidden">
+                 <h3 style="margin-bottom: 1rem;">Casino</h3>
+                 <div class="grid-3">
+                     <div class="card-base" style="padding: 2rem; text-align: center;">
+                         <i class="fas fa-dice" style="font-size: 3rem; color: #ec4899; margin-bottom: 1rem;"></i>
+                         <h3>Neon Slots</h3>
+                         <button class="btn btn-primary" style="margin-top: 1rem;">Play</button>
+                     </div>
+                 </div>
             </section>
         </main>
     </div>
 
     <div id="rewards-modal">
         <div class="rewards-card">
-            <div style="background: #fbbf24; padding: 1.5rem; text-align: center; position: relative;">
-                <h2 style="color: #1e1b2e; font-weight: 800; text-transform: uppercase;">Daily Reward</h2>
-                <div onclick="closeRewards()" style="position: absolute; right: 20px; top: 20px; background: #ef4444; width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; cursor: pointer; color: white;"><i class="fas fa-times"></i></div>
+            <div style="background: #fbbf24; padding: 1.5rem;">
+                <h2 style="color: #1e1b2e;">Daily Reward</h2>
             </div>
-            <div class="days-grid">
-                <div class="day-card active" id="day-4-card">
-                    <span style="font-size: 0.8rem; font-weight: bold;">TODAY</span>
-                    <i class="fas fa-coins" style="font-size: 1.5rem; margin: 5px 0;"></i>
-                    <span style="font-weight: 800; font-size: 1.2rem;">40</span>
-                </div>
-            </div>
-            <div style="padding: 2rem; text-align: center; background: #1e1b2e;">
-                <button id="claim-btn" onclick="claimReward()" style="background: #fbbf24; color: #451a03; padding: 15px 60px; border-radius: 50px; border: none; font-weight: 800; font-size: 1.2rem; cursor: pointer;">CLAIM 40 COINS</button>
+            <div style="padding: 2rem;">
+                <p style="margin-bottom: 1.5rem; color: #ccc;">Claim your daily login bonus!</p>
+                <button class="btn btn-primary" onclick="claimReward()" style="background: #fbbf24; color: #000;">CLAIM 50 CREDITS</button>
+                <br><br>
+                <span onclick="closeRewards()" style="cursor: pointer; color: #666; font-size: 0.9rem;">Close</span>
             </div>
         </div>
     </div>
@@ -96,49 +99,62 @@
     <script>
         const socket = io();
         let myUser = null;
-        const DEMO_USER = 'ashleychan'; // Auto-login for demo
+        const DEMO_USER = 'ashleychan';
 
-        // LOGIN
         socket.emit('player:login', DEMO_USER);
-        
-        // SYNC HANDLERS
-        socket.on('player:login_success', (userData) => {
-            myUser = userData;
-            updateUI();
-        });
 
-        socket.on('sync:player_update', (allPlayers) => {
-            if (myUser) {
-                const updatedMe = allPlayers.find(p => p.id === myUser.id);
-                if (updatedMe) {
-                    myUser = updatedMe;
-                    updateUI();
-                }
+        socket.on('player:login_success', (u) => { myUser = u; updateUI(); });
+        
+        socket.on('sync:players', (all) => {
+            if(myUser) {
+                const me = all.find(p => p.id === myUser.id);
+                if(me) { myUser = me; updateUI(); }
             }
         });
 
+        socket.on('sync:store', (items) => {
+            const grid = document.getElementById('store-grid'); grid.innerHTML = '';
+            items.forEach(i => {
+                const btn = i.status === 'Available' ? `<button class="btn btn-primary" onclick="buyItem(${i.id})" style="width:100%">Buy (${i.price})</button>` : `<button class="btn" disabled style="width:100%; background:#333;">Sold Out</button>`;
+                grid.innerHTML += `<div class="card-base" style="padding: 1.5rem;"><h4>${i.name}</h4><p style="color:#fbbf24; font-weight:bold; margin-bottom:1rem;">${i.price} Credits</p>${btn}</div>`;
+            });
+        });
+
+        socket.on('sync:auctions', (auctions) => {
+            const grid = document.getElementById('auction-grid'); grid.innerHTML = '';
+            auctions.forEach(a => {
+                if(a.status !== 'Active') return;
+                const minBid = parseInt(a.bid) + 50;
+                grid.innerHTML += `<div class="card-base" style="padding: 1.5rem;">
+                    <h4>${a.item}</h4>
+                    <p style="color:#fbbf24;">Current Bid: ${a.bid}</p>
+                    <p style="font-size:0.8rem; color:#888; margin-bottom:1rem;">Top Bidder: ${a.bidder || 'None'}</p>
+                    <button class="btn btn-primary" onclick="placeBid(${a.id}, ${minBid})" style="width:100%">Bid ${minBid}</button>
+                </div>`;
+            });
+        });
+
         function updateUI() {
-            if(!myUser) return;
             document.getElementById('user-display').innerText = myUser.user;
-            document.getElementById('credit-display').innerText = myUser.credits.toLocaleString();
-            document.getElementById('crystal-display').innerText = myUser.crystals.toLocaleString();
+            document.getElementById('credit-display').innerText = myUser.credits;
         }
 
-        // REWARD LOGIC
+        // ACTIONS
+        function buyItem(id) { socket.emit('player:buy_item', { userId: myUser.id, itemId: id }); }
+        function placeBid(aucId, amt) { socket.emit('player:place_bid', { userId: myUser.id, auctionId: aucId, bidAmount: amt }); }
         function openRewards() { document.getElementById('rewards-modal').classList.add('open'); }
         function closeRewards() { document.getElementById('rewards-modal').classList.remove('open'); }
-        function claimReward() {
-            socket.emit('player:claim_reward', { username: myUser.user, amount: 40 });
-            document.getElementById('claim-btn').innerText = "CLAIMED!";
-            document.getElementById('claim-btn').disabled = true;
-            document.getElementById('claim-btn').style.background = "#4ade80"; 
-            setTimeout(closeRewards, 1000);
+        function claimReward() { 
+            socket.emit('player:claim_reward', { userId: myUser.id, amount: 50 });
+            closeRewards();
         }
 
-        // NAV LOGIC
-        function switchTab(tabName, navElement) {
-            document.querySelectorAll('.nav-icon').forEach(el => el.classList.remove('active'));
-            if(navElement) navElement.classList.add('active');
+        // NAV
+        function switchTab(v, el) {
+            document.querySelectorAll('.nav-icon').forEach(e => e.classList.remove('active'));
+            el.classList.add('active');
+            document.querySelectorAll('.page-section').forEach(s => s.classList.add('hidden'));
+            document.getElementById('sec-'+v).classList.remove('hidden');
         }
     </script>
 </body>
