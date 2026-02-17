@@ -12,17 +12,18 @@
     
     <style>
         :root {
-            /* DARK GAMER PALETTE */
-            --bg-app: #121214;         
-            --bg-panel: #1e1e24;       
-            --bg-panel-hover: #2a2a32; 
+            /* DARK GAMER PALETTE - REFINED */
+            --bg-app: #09090b;         
+            --bg-panel: #18181b;       
+            --bg-panel-hover: #27272a; 
             --accent-primary: #6366f1;
-            --accent-glow: rgba(99, 102, 241, 0.4);
+            --accent-glow: rgba(99, 102, 241, 0.3);
             --accent-secondary: #fbbf24;
-            --text-main: #ffffff;
+            --text-main: #f4f4f5;
             --text-muted: #a1a1aa;
-            --radius-lg: 30px;         
-            --radius-sm: 15px;
+            --radius-lg: 24px;         /* Reduced from 30px */
+            --radius-sm: 12px;         /* Reduced from 15px */
+            --border-color: rgba(255,255,255,0.08);
         }
 
         * { margin:0; padding:0; box-sizing:border-box; font-family: 'Inter', sans-serif; }
@@ -32,174 +33,194 @@
             color: var(--text-main); 
             height: 100vh; 
             display: flex; 
-            padding: 20px; 
-            gap: 20px;
+            padding: 15px; /* Reduced padding */
+            gap: 15px;
             overflow: hidden;
         }
 
         /* --- SIDEBAR --- */
         .sidebar {
-            width: 80px;
+            width: 70px; /* Slimmer */
             background: var(--bg-panel);
+            border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
             display: flex; flex-direction: column; align-items: center;
-            padding: 40px 0; flex-shrink: 0;
-            box-shadow: 5px 0 20px rgba(0,0,0,0.2); z-index: 100;
+            padding: 30px 0; flex-shrink: 0;
+            z-index: 100;
         }
         .brand-logo {
-            width: 50px; height: 50px; background: var(--accent-primary); color: white;
-            border-radius: 15px; display: grid; place-items: center;
-            font-family: 'Sora'; font-weight: 800; font-size: 1.5rem; margin-bottom: 40px;
+            width: 40px; height: 40px; background: var(--accent-primary); color: white;
+            border-radius: 10px; display: grid; place-items: center;
+            font-family: 'Sora'; font-weight: 800; font-size: 1.2rem; margin-bottom: 30px;
             box-shadow: 0 0 15px var(--accent-glow);
         }
         .nav-item {
-            width: 50px; height: 50px; border-radius: 15px; display: grid; place-items: center;
-            color: var(--text-muted); margin-bottom: 15px; cursor: pointer; transition: 0.3s; position: relative;
+            width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center;
+            color: var(--text-muted); margin-bottom: 10px; cursor: pointer; transition: 0.2s; position: relative;
         }
         .nav-item:hover { background: var(--bg-panel-hover); color: white; }
-        .nav-item.active { background: var(--accent-primary); color: white; box-shadow: 0 5px 15px var(--accent-glow); }
+        .nav-item.active { background: var(--accent-primary); color: white; box-shadow: 0 4px 12px var(--accent-glow); }
+        
+        /* Tooltip */
         .nav-item::after {
-            content: attr(data-tooltip); position: absolute; left: 70px; background: white; color: black;
-            padding: 5px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: 600;
-            opacity: 0; pointer-events: none; transition: 0.2s; white-space: nowrap; box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 101;
+            content: attr(data-tooltip); position: absolute; left: 60px; background: white; color: black;
+            padding: 4px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;
+            opacity: 0; pointer-events: none; transition: 0.2s; white-space: nowrap; 
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2); z-index: 101;
         }
         .nav-item:hover::after { opacity: 1; transform: translateX(5px); }
 
         /* --- MAIN AREA --- */
         .app-container {
             flex: 1; background: var(--bg-app); border-radius: var(--radius-lg);
-            display: flex; flex-direction: column; gap: 20px; overflow: hidden; position: relative;
+            display: flex; flex-direction: column; gap: 15px; overflow: hidden; position: relative;
         }
 
         /* TOP BAR */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; }
         .search-pill {
-            background: var(--bg-panel); padding: 12px 25px; border-radius: 50px;
-            display: flex; align-items: center; gap: 10px; width: 400px; color: var(--text-muted);
+            background: var(--bg-panel); padding: 8px 20px; border-radius: 50px; border: 1px solid var(--border-color);
+            display: flex; align-items: center; gap: 10px; width: 350px; color: var(--text-muted); font-size: 0.9rem;
         }
-        .search-pill input { background: transparent; border: none; color: white; outline: none; width: 100%; }
+        .search-pill input { background: transparent; border: none; color: white; outline: none; width: 100%; font-size: 0.9rem; }
         
-        .user-actions { display: flex; align-items: center; gap: 20px; position: relative; }
+        .user-actions { display: flex; align-items: center; gap: 15px; position: relative; }
         .icon-btn { 
-            width: 45px; height: 45px; border-radius: 50%; background: var(--bg-panel);
-            display: grid; place-items: center; cursor: pointer; position: relative; transition: 0.2s;
+            width: 40px; height: 40px; border-radius: 50%; background: var(--bg-panel); border: 1px solid var(--border-color);
+            display: grid; place-items: center; cursor: pointer; transition: 0.2s; color: var(--text-muted);
         }
-        .icon-btn:hover { background: var(--bg-panel-hover); color: white; }
+        .icon-btn:hover { background: var(--bg-panel-hover); color: white; border-color: rgba(255,255,255,0.2); }
         .notif-badge {
-            position: absolute; top: 0; right: 0; width: 12px; height: 12px;
+            position: absolute; top: 0; right: 0; width: 10px; height: 10px;
             background: #ef4444; border-radius: 50%; border: 2px solid var(--bg-panel); display: none;
         }
         .profile-mini {
-            display: flex; align-items: center; gap: 10px; background: var(--bg-panel);
-            padding: 5px 15px 5px 5px; border-radius: 50px; cursor: pointer;
+            display: flex; align-items: center; gap: 10px; background: var(--bg-panel); border: 1px solid var(--border-color);
+            padding: 4px 12px 4px 4px; border-radius: 50px; cursor: pointer; transition: 0.2s;
         }
-        .profile-mini img { width: 35px; height: 35px; border-radius: 50%; }
+        .profile-mini:hover { background: var(--bg-panel-hover); border-color: rgba(255,255,255,0.2); }
+        .profile-mini img { width: 32px; height: 32px; border-radius: 50%; }
 
-        /* NOTIFICATION DROPDOWN */
+        /* NOTIFICATIONS */
         .notif-dropdown {
-            position: absolute; top: 60px; right: 0; width: 350px;
-            background: #18181b; border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px; padding: 15px; z-index: 200;
+            position: absolute; top: 55px; right: 0; width: 320px;
+            background: #18181b; border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 12px; z-index: 200;
             display: none; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
         }
         .notif-dropdown.open { display: block; animation: slideDown 0.2s ease; }
-        @keyframes slideDown { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
-        .notif-header { font-family: 'Sora'; font-weight: 700; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .notif-list { max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .notif-header { font-family: 'Sora'; font-weight: 700; font-size: 0.9rem; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border-color); }
+        .notif-list { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
         .notif-item { 
-            background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; font-size: 0.85rem; 
-            border-left: 3px solid var(--accent-primary); color: #d1d5db;
+            background: rgba(255,255,255,0.03); padding: 8px 12px; border-radius: 8px; font-size: 0.8rem; 
+            border-left: 2px solid var(--accent-primary); color: #e4e4e7;
         }
-        .notif-time { font-size: 0.7rem; color: var(--text-muted); margin-top: 5px; display: block; }
-        .empty-notif { text-align: center; color: var(--text-muted); padding: 20px; font-style: italic; }
-
+        .notif-time { font-size: 0.7rem; color: var(--text-muted); margin-top: 4px; display: block; }
+        
         /* DASHBOARD CONTENT */
-        .dashboard-content { flex: 1; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; gap: 30px; }
+        .dashboard-content { 
+            flex: 1; overflow-y: auto; padding-right: 5px; 
+            display: grid; grid-template-columns: 3fr 1fr; gap: 20px; /* 3:1 Ratio for better balance */
+        }
 
-        /* HERO BANNER */
+        /* LEFT COLUMN */
+        .feed-column { display: flex; flex-direction: column; gap: 20px; }
+
+        /* HERO BANNER - COMPACT */
         .hero-banner {
-            height: 280px; border-radius: var(--radius-lg);
-            background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 100%), url('https://placehold.co/800x400/2e1065/FFF?text=Stick+N+Trade');
+            height: 220px; /* Much smaller */
+            border-radius: var(--radius-lg);
+            background: linear-gradient(90deg, rgba(17,24,39,0.9) 0%, rgba(17,24,39,0.4) 100%), url('https://placehold.co/800x400/2e1065/FFF?text=Stick+N+Trade');
             background-size: cover; background-position: center;
-            position: relative; padding: 40px;
-            display: flex; flex-direction: column; justify-content: flex-end;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            position: relative; padding: 30px;
+            display: flex; flex-direction: column; justify-content: center;
+            border: 1px solid var(--border-color);
         }
-        .hero-content h1 { font-family: 'Sora'; font-size: 2.5rem; margin-bottom: 5px; line-height: 1.1; }
-        .hero-stats { display: flex; gap: 15px; margin-top: 20px; }
+        .hero-content h1 { font-family: 'Sora'; font-size: 2rem; margin-bottom: 5px; line-height: 1.1; font-weight: 700; }
+        .hero-content p { font-size: 0.9rem; color: #d1d5db; max-width: 60%; }
+        
+        .hero-stats { display: flex; gap: 10px; margin-top: 15px; }
         .stat-badge {
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
-            padding: 8px 16px; border-radius: 12px; display: flex; align-items: center; gap: 8px;
-            border: 1px solid rgba(255,255,255,0.1); font-weight: 600; font-size: 0.9rem;
+            background: rgba(255,255,255,0.08); backdrop-filter: blur(10px);
+            padding: 6px 12px; border-radius: 8px; display: flex; align-items: center; gap: 8px;
+            border: 1px solid rgba(255,255,255,0.1); font-weight: 600; font-size: 0.85rem;
         }
 
-        /* GIFTCODE WIDGET (HOVER REVEAL) */
+        /* GIFTCODE WIDGET (COMPACT) */
         .giftcode-container {
-            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
-            border-radius: var(--radius-sm); padding: 15px 25px;
-            width: fit-content; display: flex; align-items: center; gap: 10px;
-            transition: all 0.3s ease; overflow: hidden; height: 60px; cursor: pointer;
-            box-shadow: 0 5px 15px rgba(251, 191, 36, 0.3);
+            background: linear-gradient(135deg, #fbbf24 0%, #b45309 100%);
+            border-radius: var(--radius-sm); padding: 0 20px;
+            height: 50px; display: flex; align-items: center; gap: 10px;
+            width: fit-content; transition: all 0.3s ease; overflow: hidden; 
+            cursor: pointer; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
             margin-bottom: 20px;
         }
-        .giftcode-container:hover { width: 320px; background: #fffbeb; }
-        .giftcode-icon { font-size: 1.5rem; color: #451a03; min-width: 30px; }
-        .giftcode-label { font-family: 'Sora'; font-weight: 800; color: #451a03; white-space: nowrap; }
-        .giftcode-input-group { 
-            display: flex; gap: 5px; opacity: 0; transform: translateX(20px); transition: 0.3s; pointer-events: none; width: 0;
-        }
-        .giftcode-container:hover .giftcode-input-group { opacity: 1; transform: translateX(0); pointer-events: all; width: auto; }
+        .giftcode-container:hover { width: 300px; }
+        .giftcode-icon { font-size: 1.2rem; color: #451a03; }
+        .giftcode-label { font-family: 'Sora'; font-weight: 700; color: #451a03; white-space: nowrap; font-size: 0.9rem; }
+        .giftcode-input-group { display: flex; gap: 5px; opacity: 0; width: 0; transition: 0.3s; pointer-events: none; }
+        .giftcode-container:hover .giftcode-input-group { opacity: 1; width: auto; pointer-events: all; }
         .giftcode-container:hover .giftcode-label { display: none; }
-        .giftcode-input { 
-            padding: 8px; border-radius: 6px; border: 1px solid #d97706; outline: none; font-family: 'Inter'; width: 140px;
-        }
-        .giftcode-btn { 
-            padding: 8px 12px; background: #d97706; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
-        }
+        .giftcode-input { padding: 6px 10px; border-radius: 6px; border: none; outline: none; width: 130px; font-size: 0.85rem; }
+        .giftcode-btn { padding: 6px 12px; background: #451a03; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.8rem; }
 
-        /* GRID SECTIONS */
-        .sec-title { font-family: 'Sora'; font-size: 1.4rem; font-weight: 700; margin-bottom: 15px; }
-        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        /* GRID LAYOUTS */
+        .sec-title { font-family: 'Sora'; font-size: 1.1rem; font-weight: 600; margin-bottom: 12px; color: var(--text-main); }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; } /* Smaller cards */
         
         .gamer-card {
-            background: var(--bg-panel); border-radius: var(--radius-sm); padding: 15px;
-            transition: 0.3s; cursor: pointer; border: 1px solid transparent;
+            background: var(--bg-panel); border-radius: var(--radius-sm); padding: 12px;
+            transition: 0.2s; cursor: pointer; border: 1px solid var(--border-color);
+            position: relative;
         }
-        .gamer-card:hover { transform: translateY(-5px); background: var(--bg-panel-hover); border-color: var(--accent-primary); }
-        .card-img { width: 100%; height: 130px; border-radius: 10px; object-fit: cover; margin-bottom: 15px; }
-        .card-title { font-family: 'Sora'; font-weight: 600; font-size: 1rem; margin-bottom: 5px; }
-        .card-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between; }
+        .gamer-card:hover { transform: translateY(-3px); border-color: var(--accent-primary); background: var(--bg-panel-hover); }
+        .card-img { width: 100%; height: 100px; border-radius: 8px; object-fit: cover; margin-bottom: 10px; }
+        .card-title { font-family: 'Sora'; font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-meta { font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
         
-        .btn-action { width: 100%; padding: 10px; background: var(--accent-primary); border: none; border-radius: 8px; color: white; margin-top: 10px; cursor: pointer; font-weight: 600; }
+        .btn-action { 
+            width: 100%; padding: 8px; background: var(--accent-primary); border: none; 
+            border-radius: 6px; color: white; margin-top: 8px; cursor: pointer; 
+            font-weight: 600; font-size: 0.8rem; transition: 0.2s;
+        }
+        .btn-action:hover { background: #4f46e5; }
 
-        /* CUSTOM TOAST (Orange/Purple Style) */
+        /* RIGHT SIDEBAR */
+        .sidebar-right { display: flex; flex-direction: column; gap: 20px; }
+        .mini-section { background: var(--bg-panel); border-radius: var(--radius-lg); padding: 20px; border: 1px solid var(--border-color); }
+        .list-item { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border-color); }
+        .list-thumb { width: 36px; height: 36px; border-radius: 8px; object-fit: cover; background: #333; }
+        .list-info h4 { font-family: 'Sora'; font-size: 0.85rem; font-weight: 600; }
+        .list-info span { font-size: 0.7rem; color: var(--text-muted); }
+
+        /* TOAST */
         .custom-toast {
-            position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            background: linear-gradient(90deg, #d97706, #fbbf24);
-            border: 3px solid #7c3aed; border-radius: 15px;
-            padding: 15px 25px; display: flex; align-items: center; gap: 15px;
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            background: #18181b; border: 1px solid var(--accent-secondary); border-radius: 12px;
+            padding: 12px 20px; display: flex; align-items: center; gap: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000;
-            opacity: 0; transition: 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            opacity: 0; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         .custom-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-        .toast-icon { width: 50px; height: 50px; background: linear-gradient(135deg, #f59e0b, #b45309); border-radius: 10px; display: grid; place-items: center; border: 2px dashed #7c3aed; }
-        .toast-text h4 { font-family: 'Sora'; color: #451a03; margin-bottom: 2px; font-weight: 800; text-transform: uppercase; }
-        .toast-text p { color: white; font-weight: 600; font-size: 0.9rem; text-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .toast-icon { color: var(--accent-secondary); font-size: 1.2rem; }
+        .toast-text h4 { font-family: 'Sora'; color: white; font-size: 0.9rem; }
+        .toast-text p { color: var(--text-muted); font-size: 0.8rem; }
 
-        /* VIEW TOGGLING */
-        .view-section { display: none; animation: fadeIn 0.4s ease; }
+        /* UTILS */
+        .view-section { display: none; animation: fadeIn 0.3s ease; }
         .view-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* REWARD MODAL */
+        /* REWARD MODAL - Compact */
         .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; display:flex; justify-content:center; align-items:center; backdrop-filter:blur(5px); display:none; }
         .modal-overlay.open { display:flex; }
-        .reward-box { width: 800px; border-radius: 20px; overflow: hidden; border: 4px solid #fbbf24; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-        .rew-body { background: #a855f7; padding: 30px; display:flex; flex-direction:column; align-items:center; }
-        .days-row { display:flex; gap:10px; justify-content:center; align-items:flex-end; width:100%; margin-bottom:30px; }
-        .day-card { width: 90px; height: 120px; border-radius: 10px; background: #7c3aed; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative; border: 2px solid rgba(255,255,255,0.3); }
-        .day-card.active { width: 110px; height: 140px; background: #fbbf24; color: black; z-index: 10; border: 3px solid white; box-shadow: 0 0 30px #fbbf24; }
-        .claim-btn { background: #fbbf24; border:none; padding: 15px 60px; border-radius:50px; font-family:'Sora'; font-weight: 800; font-size:1.3rem; color: #451a03; cursor:pointer; }
+        .reward-box { width: 700px; border-radius: 16px; overflow: hidden; border: 3px solid #fbbf24; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
+        .rew-body { background: #7c3aed; padding: 25px; display:flex; flex-direction:column; align-items:center; }
+        .days-row { display:flex; gap:8px; justify-content:center; align-items:flex-end; width:100%; margin-bottom:25px; }
+        .day-card { width: 80px; height: 110px; border-radius: 8px; background: rgba(0,0,0,0.2); text-align: center; display: flex; flex-direction: column; justify-content: center; border: 1px solid rgba(255,255,255,0.2); color:white; font-size: 0.8rem; }
+        .day-card.active { width: 95px; height: 130px; background: #fbbf24; color: black; z-index: 10; border: 2px solid white; box-shadow: 0 0 20px rgba(251, 191, 36, 0.5); font-weight: bold; }
+        .claim-btn { background: #fbbf24; border:none; padding: 12px 50px; border-radius: 50px; font-family:'Sora'; font-weight: 800; font-size:1.1rem; color: #451a03; cursor:pointer; box-shadow: 0 4px 0 #b45309; }
+        .claim-btn:active { transform:translateY(4px); box-shadow:none; }
 
     </style>
 </head>
@@ -219,7 +240,7 @@
         <div class="top-bar">
             <div class="search-pill">
                 <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search items, auctions...">
+                <input type="text" placeholder="Search...">
             </div>
             <div class="user-actions">
                 <div class="icon-btn" onclick="toggleNotif()">
@@ -229,115 +250,131 @@
                 <div class="notif-dropdown" id="notif-menu">
                     <div class="notif-header">Notifications</div>
                     <div class="notif-list" id="notif-list">
-                        <div class="empty-notif">No new notifications</div>
+                        <div style="text-align:center; color:var(--text-muted); padding:10px; font-style:italic;">No notifications</div>
                     </div>
                 </div>
 
                 <div class="profile-mini">
                     <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" id="mini-avatar">
-                    <span style="font-size:0.9rem; font-weight:600; margin-right:10px;" id="u-name-mini">Player</span>
+                    <span style="font-size:0.85rem; font-weight:600; margin-right:5px;" id="u-name-mini">Player</span>
                 </div>
             </div>
         </div>
 
         <div class="dashboard-content">
             
-            <div id="view-home" class="view-section active">
+            <div class="feed-column">
                 
-                <div class="hero-banner">
-                    <div class="hero-content">
-                        <h1>Welcome Back, <span id="u-name-hero" style="color:var(--accent-secondary)">Player</span></h1>
-                        <p>Check your latest stats and daily rewards.</p>
-                        <div class="hero-stats">
-                            <div class="stat-badge"><i class="fas fa-coins" style="color:#fbbf24"></i> <span id="u-credits">0</span></div>
-                            <div class="stat-badge"><i class="fas fa-gem" style="color:#d8b4fe"></i> <span id="u-crystals">0</span></div>
-                            <div class="stat-badge" style="background:var(--accent-primary); cursor:pointer;" onclick="openRewards()">Daily Reward</div>
+                <div id="view-home" class="view-section active">
+                    
+                    <div class="hero-banner">
+                        <div class="hero-content">
+                            <h1>Welcome Back, <span id="u-name-hero" style="color:var(--accent-secondary)">Player</span></h1>
+                            <p>Check your latest stats and daily rewards.</p>
+                            <div class="hero-stats">
+                                <div class="stat-badge"><i class="fas fa-coins" style="color:#fbbf24"></i> <span id="u-credits">0</span></div>
+                                <div class="stat-badge"><i class="fas fa-gem" style="color:#d8b4fe"></i> <span id="u-crystals">0</span></div>
+                                <div class="stat-badge" style="background:var(--accent-primary); cursor:pointer; border:none;" onclick="openRewards()">Daily Reward</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <div class="giftcode-container">
+                            <div class="giftcode-icon"><i class="fas fa-gift"></i></div>
+                            <div class="giftcode-label">REDEEM GIFTCODE</div>
+                            <div class="giftcode-input-group">
+                                <input type="text" id="code-in" class="giftcode-input" placeholder="SNT-XXXX">
+                                <button class="giftcode-btn" onclick="redeem()">CLAIM</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <div class="sec-title">Featured Updates</div>
+                        <div id="featured-news">
+                            <div class="gamer-card" style="cursor:default; padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem;">No live events currently.</div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px;">
+                        <div class="sec-title">Quick Actions</div>
+                        <div class="card-grid">
+                            <div class="gamer-card" onclick="switchView('store', document.querySelectorAll('.nav-item')[1])">
+                                <img src="https://placehold.co/300x150/1e1b4b/FFF?text=Store" class="card-img">
+                                <div class="card-title">Item Store</div>
+                                <div class="card-meta"><span>Browse Shop</span><i class="fas fa-arrow-right"></i></div>
+                            </div>
+                            <div class="gamer-card" onclick="switchView('auction', document.querySelectorAll('.nav-item')[2])">
+                                <img src="https://placehold.co/300x150/312e81/FFF?text=Auctions" class="card-img">
+                                <div class="card-title">Auction House</div>
+                                <div class="card-meta"><span>Live Bidding</span><i class="fas fa-arrow-right"></i></div>
+                            </div>
+                            <div class="gamer-card" onclick="switchView('casino', document.querySelectorAll('.nav-item')[3])">
+                                <img src="https://placehold.co/300x150/4c1d95/FFF?text=Casino" class="card-img">
+                                <div class="card-title">Casino Royale</div>
+                                <div class="card-meta"><span>Play Games</span><i class="fas fa-arrow-right"></i></div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div style="margin-top: 30px;">
-                    <div class="giftcode-container">
-                        <div class="giftcode-icon"><i class="fas fa-gift"></i></div>
-                        <div class="giftcode-label">REDEEM GIFTCODE</div>
-                        <div class="giftcode-input-group">
-                            <input type="text" id="code-in" class="giftcode-input" placeholder="SNT-XXXX">
-                            <button class="giftcode-btn" onclick="redeem()">CLAIM</button>
-                        </div>
-                    </div>
+                <div id="view-store" class="view-section">
+                    <h2 class="sec-title">Item Store</h2>
+                    <div class="card-grid" id="store-grid"></div>
                 </div>
 
-                <div style="margin-top: 30px;">
-                    <div class="sec-title">Featured Updates</div>
-                    <div id="featured-news">
-                        <div class="gamer-card" style="cursor:default; padding: 30px; text-align: center; color: var(--text-muted);">
-                            No live events currently.
-                        </div>
-                    </div>
+                <div id="view-auction" class="view-section">
+                    <h2 class="sec-title">Auction House</h2>
+                    <div class="card-grid" id="auc-grid"></div>
                 </div>
 
-                <div style="margin-top: 30px;">
-                    <div class="sec-title">Quick Actions</div>
+                <div id="view-casino" class="view-section">
+                    <h2 class="sec-title">Casino Royale</h2>
                     <div class="card-grid">
-                        <div class="gamer-card" onclick="switchView('store', document.querySelectorAll('.nav-item')[1])">
-                            <img src="https://placehold.co/300x150/1e1b4b/FFF?text=Store" class="card-img">
-                            <div class="card-title">Item Store</div>
-                            <div class="card-meta"><span>Browse Shop</span><i class="fas fa-arrow-right"></i></div>
-                        </div>
-                        <div class="gamer-card" onclick="switchView('auction', document.querySelectorAll('.nav-item')[2])">
-                            <img src="https://placehold.co/300x150/312e81/FFF?text=Auctions" class="card-img">
-                            <div class="card-title">Auction House</div>
-                            <div class="card-meta"><span>Live Bidding</span><i class="fas fa-arrow-right"></i></div>
-                        </div>
-                        <div class="gamer-card" onclick="switchView('casino', document.querySelectorAll('.nav-item')[3])">
-                            <img src="https://placehold.co/300x150/4c1d95/FFF?text=Casino" class="card-img">
-                            <div class="card-title">Casino Royale</div>
-                            <div class="card-meta"><span>Play Games</span><i class="fas fa-arrow-right"></i></div>
+                        <div class="gamer-card" style="text-align:center; padding:20px;">
+                            <i class="fas fa-dice" style="font-size:3rem; color:#fbbf24; margin-bottom:15px;"></i>
+                            <h3>Slots</h3>
+                            <button class="btn-action">Play Now</button>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div id="view-store" class="view-section">
-                <h2 class="sec-title">Item Store</h2>
-                <div class="card-grid" id="store-grid"></div>
-            </div>
-
-            <div id="view-auction" class="view-section">
-                <h2 class="sec-title">Auction House</h2>
-                <div class="card-grid" id="auc-grid"></div>
-            </div>
-
-            <div id="view-casino" class="view-section">
-                <h2 class="sec-title">Casino Royale</h2>
-                <div class="card-grid">
-                    <div class="gamer-card" style="text-align:center; padding:30px;">
-                        <i class="fas fa-dice" style="font-size:4rem; color:#fbbf24; margin-bottom:20px;"></i>
-                        <h3>Slots</h3>
-                        <button class="btn-action">Play Now</button>
-                    </div>
+                <div id="view-inventory" class="view-section">
+                    <h2 class="sec-title">My Inventory</h2>
+                    <div class="card-grid" id="inv-grid-main"></div>
                 </div>
             </div>
 
-            <div id="view-inventory" class="view-section">
-                <h2 class="sec-title">My Inventory</h2>
-                <div class="card-grid" id="inv-grid-main"></div>
+            <div class="sidebar-right">
+                <div class="mini-section">
+                    <div class="sec-title" style="font-size:0.9rem; margin-bottom:10px;">Live Feed</div>
+                    <div id="live-feed-list">
+                        </div>
+                </div>
+
+                <div class="mini-section">
+                    <div class="sec-title" style="font-size:0.9rem; margin-bottom:10px;">Library</div>
+                    <div id="mini-inv-list">
+                        <p style="color:var(--text-muted); font-size:0.8rem;">Loading...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="custom-toast" class="custom-toast">
-        <div class="toast-icon"><i class="fas fa-check" style="color:white; font-size:1.5rem;"></i></div>
+        <div class="toast-icon"><i class="fas fa-check-circle"></i></div>
         <div class="toast-text">
-            <h4>Giftcode Valid</h4>
-            <p id="toast-msg">Giving item ...</p>
+            <h4>Notification</h4>
+            <p id="toast-msg">...</p>
         </div>
     </div>
 
     <div id="rewards-modal" class="modal-overlay">
         <div class="reward-box">
             <div style="background:#fbbf24; padding:15px; display:flex; justify-content:space-between; align-items:center;">
-                <h2 style="font-family:'Sora'; color:#1e1b4b; text-transform:uppercase; margin:0;">Daily Reward</h2>
+                <h2 style="font-family:'Sora'; color:#1e1b4b; text-transform:uppercase; margin:0; font-size:1.2rem;">Daily Reward</h2>
                 <button onclick="document.getElementById('rewards-modal').classList.remove('open')" style="background:#ef4444; color:white; border:2px solid white; border-radius:6px; width:30px; cursor:pointer;">X</button>
             </div>
             <div class="rew-body">
@@ -345,10 +382,10 @@
                     <div class="day-card claimed"><div>Day 1</div><div>100</div></div>
                     <div class="day-card claimed"><div>Day 2</div><div>500</div></div>
                     <div class="day-card claimed"><div>Day 3</div><div>1K</div></div>
-                    <div class="day-card active"><div>Day 4</div><div style="font-size:1.2rem; font-weight:800">5K</div></div>
+                    <div class="day-card active"><div>Day 4</div><div style="font-size:1.1rem; font-weight:800">5K</div></div>
                     <div class="day-card"><div>Day 5</div><div>10K</div></div>
                 </div>
-                <button class="claim-btn" id="btn-claim" onclick="claimDaily()">CLAIM REWARD</button>
+                <button class="claim-btn" id="btn-claim" onclick="claimDaily()">CLAIM</button>
             </div>
         </div>
     </div>
@@ -357,26 +394,30 @@
     <script>
         const socket = io();
         let myUser = null;
-        let notifications = [];
 
         socket.emit('player:login', 'tussday');
-
         socket.on('player:login_success', u => { myUser = u; render(null); });
         socket.on('sync:full_data', db => {
             if(myUser) myUser = db.players.find(p => p.id === myUser.id) || myUser;
             updateNotifications(db);
             render(db);
         });
-        socket.on('redeem_success', msg => { showToast(msg); });
-        socket.on('redeem_fail', msg => { showToast(msg); }); // You can adjust toast color if failed
+        socket.on('redeem_success', msg => showToast(msg));
+        socket.on('redeem_fail', msg => showToast(msg));
 
         function render(db) {
             if(!myUser) return;
-            
             document.getElementById('u-name-mini').innerText = myUser.user;
             document.getElementById('u-name-hero').innerText = myUser.user;
             document.getElementById('u-credits').innerText = myUser.credits.toLocaleString();
             document.getElementById('u-crystals').innerText = myUser.crystals.toLocaleString();
+
+            const miniInv = document.getElementById('mini-inv-list');
+            miniInv.innerHTML = '';
+            if(myUser.inventory.length === 0) miniInv.innerHTML = '<span style="color:var(--text-muted); font-size:0.75rem;">Empty</span>';
+            myUser.inventory.slice(0, 4).forEach(i => {
+                miniInv.innerHTML += `<div class="list-item"><img src="${i.img}" class="list-thumb"><div class="list-info"><h4>${i.name}</h4><span>Item</span></div></div>`;
+            });
 
             const mainInv = document.getElementById('inv-grid-main');
             mainInv.innerHTML = '';
@@ -385,83 +426,59 @@
             });
 
             if(db) {
-                // FEATURED UPDATE (Latest Announcement)
                 if(db.announcements.length > 0) {
                     const latest = db.announcements[0];
                     document.getElementById('featured-news').innerHTML = `
-                    <div class="gamer-card" style="cursor:default; border-left: 4px solid #fbbf24;">
+                    <div class="gamer-card" style="cursor:default; border-left: 3px solid #fbbf24; padding:15px;">
                         <div class="card-meta"><span>${new Date(latest.id).toLocaleDateString()}</span></div>
-                        <div class="card-title" style="font-size:1.5rem; margin:10px 0;">${latest.title}</div>
-                        <p style="color:var(--text-muted); font-size:1rem;">${latest.content}</p>
+                        <div class="card-title" style="font-size:1.1rem; margin:8px 0;">${latest.title}</div>
+                        <p style="color:var(--text-muted); font-size:0.85rem;">${latest.content}</p>
                     </div>`;
                 }
-
                 const st = document.getElementById('store-grid'); st.innerHTML = '';
                 db.storeItems.forEach(i => {
-                    if(i.status === 'Available')
-                    st.innerHTML += `<div class="gamer-card"><img src="${i.img}" class="card-img"><div class="card-title">${i.name}</div><div class="card-meta"><span style="color:#fbbf24">${i.price} Credits</span></div><button class="btn-action" onclick="socket.emit('player:buy_item', {userId:${myUser.id}, itemId:${i.id}})">Buy</button></div>`;
+                    if(i.status === 'Available') st.innerHTML += `<div class="gamer-card"><img src="${i.img}" class="card-img"><div class="card-title">${i.name}</div><div class="card-meta"><span style="color:#fbbf24">${i.price}</span></div><button class="btn-action" onclick="socket.emit('player:buy_item', {userId:${myUser.id}, itemId:${i.id}})">Buy</button></div>`;
                 });
-
                 const au = document.getElementById('auc-grid'); au.innerHTML = '';
                 db.auctions.forEach(a => {
                     if(a.status === 'Active') {
                         const min = parseInt(a.bid) + 100;
-                        au.innerHTML += `<div class="gamer-card"><img src="${a.img}" class="card-img"><div class="card-title">${a.item}</div><div class="card-meta"><span style="color:#fbbf24">Bid: ${a.bid}</span></div><button class="btn-action" onclick="socket.emit('player:place_bid', {userId:${myUser.id}, aucId:${a.id}, bid:${min}})">Bid ${min}</button></div>`;
+                        au.innerHTML += `<div class="gamer-card"><img src="${a.img}" class="card-img"><div class="card-title">${a.item}</div><div class="card-meta"><span style="color:#fbbf24">${a.bid}</span></div><button class="btn-action" onclick="socket.emit('player:place_bid', {userId:${myUser.id}, aucId:${a.id}, bid:${min}})">Bid ${min}</button></div>`;
                     }
                 });
             }
         }
 
-        // NOTIFICATIONS LOGIC
         function updateNotifications(db) {
-            // Simple logic: if logs change, add to notifs
-            // In a real app, you'd compare timestamps or IDs
             const list = document.getElementById('notif-list');
+            const feed = document.getElementById('live-feed-list');
             if(db.logs.length > 0) {
                 list.innerHTML = '';
+                feed.innerHTML = '';
                 document.getElementById('notif-dot').style.display = 'block';
                 db.logs.slice(0, 5).forEach(log => {
                     const time = new Date(log.time).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-                    list.innerHTML += `
-                    <div class="notif-item">
-                        <div>${log.msg}</div>
-                        <span class="notif-time">${time}</span>
-                    </div>`;
+                    const itemHtml = `<div class="notif-item"><div>${log.msg}</div><span class="notif-time">${time}</span></div>`;
+                    list.innerHTML += itemHtml;
+                    
+                    // Add to live feed sidebar as well
+                    feed.innerHTML += `<div class="list-item"><div class="list-thumb" style="background:#18181b; display:grid; place-items:center; color:#fbbf24;"><i class="fas fa-bolt"></i></div><div class="list-info" style="font-size:0.75rem;">${log.msg}</div></div>`;
                 });
             }
         }
 
-        function toggleNotif() {
-            document.getElementById('notif-menu').classList.toggle('open');
-            document.getElementById('notif-dot').style.display = 'none'; // Clear badge on open
-        }
-
-        // TOAST LOGIC
         function showToast(msg) {
             const toast = document.getElementById('custom-toast');
             document.getElementById('toast-msg').innerText = msg;
             toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 3000);
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // OTHER ACTIONS
-        function switchView(viewId, el) {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-'+viewId).classList.add('active');
-            if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
-        }
+        function toggleNotif() { document.getElementById('notif-menu').classList.toggle('open'); document.getElementById('notif-dot').style.display = 'none'; }
+        function switchView(id, el) { document.querySelectorAll('.view-section').forEach(v=>v.classList.remove('active')); document.getElementById('view-'+id).classList.add('active'); if(el){ document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active')); el.classList.add('active'); } }
         function openRewards() { document.getElementById('rewards-modal').classList.add('open'); }
-        function claimDaily() {
-            socket.emit('player:claim_daily', { userId: myUser.id, day:4, amount:5000 });
-            document.getElementById('btn-claim').innerText = 'CLAIMED!';
-            document.getElementById('btn-claim').disabled = true;
-            setTimeout(() => document.getElementById('rewards-modal').classList.remove('open'), 1000);
-        }
-        function redeem() {
-            const code = document.getElementById('code-in').value;
-            socket.emit('player:redeem_code', { userId: myUser.id, code });
-            document.getElementById('code-in').value = '';
-        }
+        function claimDaily() { socket.emit('player:claim_daily', { userId: myUser.id, day:4, amount:5000 }); document.getElementById('btn-claim').innerText='CLAIMED!'; document.getElementById('btn-claim').disabled=true; setTimeout(()=>document.getElementById('rewards-modal').classList.remove('open'),1000); }
+        function redeem() { socket.emit('player:redeem_code', { userId: myUser.id, code: document.getElementById('code-in').value }); document.getElementById('code-in').value=''; }
     </script>
 </body>
 </html>
