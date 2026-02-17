@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SNT | Admin Ultimate v24</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --bg-body: #0f172a; --bg-panel: #1e293b; --primary: #6366f1; --danger: #ef4444; --success: #10b981; --warning: #f59e0b; --crystal: #d8b4fe; --text-main: #f8fafc; --text-muted: #94a3b8; --radius: 12px; --input-bg: #0f172a; --border: rgba(255,255,255,0.1); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background-color: transparent; border-radius: 20px; }
+        .sidebar { width: 260px; background: #111827; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 1.5rem; }
+        .main-content { flex: 1; padding: 2rem; overflow-y: auto; background: #0f172a; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .hidden { display: none !important; }
+        .admin-badge { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; border: 1px solid rgba(99, 102, 241, 0.5); margin-left: 10px; font-weight: bold; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 15px; margin-bottom: 5px; border-radius: var(--radius); color: var(--text-muted); text-decoration: none; transition: 0.2s; cursor: pointer; }
+        .nav-link:hover, .nav-link.active { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { background: var(--bg-panel); padding: 1.5rem; border-radius: var(--radius); border: 1px solid var(--border); }
+        .stat-val { font-size: 1.8rem; font-weight: 700; margin-top: 10px; }
+        .stat-label { color: var(--text-muted); font-size: 0.9rem; }
+        .log-list p { margin-bottom: 8px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
+        .log-time { color: var(--text-muted); font-family: monospace; margin-right: 10px; }
+        .panel { background: var(--bg-panel); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--border); }
+        .form-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; height: 100%; }
+        .input-group { margin-bottom: 1rem; }
+        .input-group label { display: block; color: var(--text-muted); margin-bottom: 5px; font-size: 0.9rem; }
+        .input-control { width: 100%; padding: 12px; background: var(--input-bg); border: 1px solid var(--border); color: white; border-radius: 8px; outline: none; }
+        textarea.input-control { resize: vertical; min-height: 100px; }
+        .table-container { background: var(--bg-panel); border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px 20px; text-align: center; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        th { background: rgba(0,0,0,0.2); font-weight: 600; color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; }
+        .btn-primary { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: 0.2s; }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; width: auto; }
+        .status-badge { padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: bold; }
+        .status-active { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+        .status-offline { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+        .status-banned { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 100; display: flex; justify-content: center; align-items: center; }
+        .modal-content { background: var(--bg-panel); width: 600px; padding: 2rem; border-radius: var(--radius); border: 1px solid var(--primary); position: relative; max-height: 80vh; overflow-y: auto; }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <div style="display: flex; align-items: center; margin-bottom: 2rem;">
+            <div style="width: 35px; height: 35px; background: var(--primary); border-radius: 8px; display: grid; place-items: center; font-weight: bold;">S</div>
+            <span style="font-weight: 700; font-size: 1.1rem; margin-left: 10px;">StickAdmin</span>
+            <span class="admin-badge">LIVE</span>
+        </div>
+        <div class="nav-link active" onclick="switchView('dashboard', this)"><i class="fas fa-chart-line"></i> Dashboard</div>
+        <div class="nav-link" onclick="switchView('announcements', this)"><i class="fas fa-bullhorn"></i> Announcements</div>
+        <div class="nav-link" onclick="switchView('players', this)"><i class="fas fa-users"></i> Player Database</div>
+        <div class="nav-link" onclick="switchView('store', this)"><i class="fas fa-store"></i> Store Manager</div>
+    </nav>
+
+    <div class="main-content">
+        <div id="view-dashboard">
+            <div class="header"><h2>Overview</h2></div>
+            <div class="stats-grid">
+                <div class="stat-card"><div class="stat-label">Total Players</div><div class="stat-val" id="stat-players">0</div></div>
+                <div class="stat-card"><div class="stat-label">Store Items</div><div class="stat-val" style="color: var(--success);" id="stat-items">0</div></div>
+                <div class="stat-card"><div class="stat-label">Active Auctions</div><div class="stat-val" style="color: var(--warning);" id="stat-auctions">0</div></div>
+                <div class="stat-card"><div class="stat-label">Server Status</div><div class="stat-val" style="color: var(--primary); font-size: 1.2rem; margin-top: 15px;">ONLINE <i class="fas fa-circle" style="font-size: 0.5rem;"></i></div></div>
+            </div>
+            <div class="panel">
+                <h3 style="margin-bottom: 1.5rem;">Live Activity Log</h3>
+                <div class="log-list" id="system-log"><p style="color:var(--text-muted)">Connecting to server...</p></div>
+            </div>
+        </div>
+
+        <div id="view-players" class="hidden">
+            <div class="header"><h2>Player Database</h2></div>
+            <div class="table-container">
+                <table>
+                    <thead><tr><th>ID</th><th>Username</th><th>Credits</th><th style="color:var(--crystal)">Crystals</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="player-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="view-announcements" class="hidden">
+            <div class="header"><h2>Announcements</h2></div>
+            <div class="form-grid">
+                <div class="panel">
+                    <h3 style="margin-bottom: 1.5rem;">Post Update</h3>
+                    <div class="input-group"><label>Title</label><input type="text" id="announce-title" class="input-control"></div>
+                    <div class="input-group"><label>Content</label><textarea id="announce-body" class="input-control"></textarea></div>
+                    <button class="btn-primary" onclick="postAnnouncement()">Publish Live</button>
+                </div>
+                <div class="table-container">
+                    <table><thead><tr><th>Date</th><th>Title</th></tr></thead><tbody id="announcement-list"></tbody></table>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-store" class="hidden">
+            <div class="header"><h2>Store Management</h2></div>
+            <div class="form-grid">
+                <div class="panel">
+                    <h3 style="margin-bottom: 1.5rem;">Add Store Item</h3>
+                    <div class="input-group"><label>Item Name</label><input type="text" id="new-item-name" class="input-control"></div>
+                    <div class="input-group"><label>Price</label><input type="number" id="new-item-price" class="input-control"></div>
+                    <div class="input-group"><label>Stock</label><input type="number" id="new-item-stock" class="input-control"></div>
+                    <button class="btn-primary" onclick="addNewStoreItem()">Add Item</button>
+                </div>
+                <div class="table-container">
+                    <table><thead><tr><th>Name</th><th>Price</th><th>Stock</th></tr></thead><tbody id="store-table-body"></tbody></table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="player-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;"><h3>Edit Player: <span id="modal-username" style="color: var(--primary);"></span></h3><i class="fas fa-times" style="cursor: pointer;" onclick="closeModal('player-modal')"></i></div>
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <div class="input-group" style="flex:1"><label>Credits Balance</label><input type="number" id="modal-credits" class="input-control"></div>
+                <div class="input-group" style="flex:1"><label>Crystals Balance</label><input type="number" id="modal-crystals" class="input-control" style="color: var(--crystal); border-color: var(--crystal);"></div>
+            </div>
+            <div class="input-group"><label>Status</label>
+                <select id="modal-status" class="input-control"><option value="Active">Active</option><option value="Offline">Offline</option><option value="Banned">Banned</option></select>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 2rem;"><button class="btn-primary" onclick="savePlayerChanges()">Save & Sync</button></div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let players = [];
+        let storeItems = [];
+        let announcements = [];
+        let auctions = [];
+        let systemLogs = [];
+        let editingPlayerId = null;
+
+        // --- SERVER SYNC LISTENERS ---
+        socket.on('init_data', (data) => {
+            players = data.players;
+            storeItems = data.storeItems;
+            announcements = data.announcements;
+            auctions = data.auctions;
+            systemLogs = data.logs || [];
+            refreshAll();
+        });
+
+        socket.on('sync:player_update', (data) => { players = data; renderPlayers(); updateDashboard(); });
+        socket.on('sync:store', (data) => { storeItems = data; renderStore(); updateDashboard(); });
+        socket.on('sync:announcements', (data) => { announcements = data; renderAnnouncements(); });
+        socket.on('sync:logs', (data) => { systemLogs = data; renderLogs(); });
+
+        // --- CORE FUNCTIONS ---
+        function refreshAll() { renderPlayers(); renderStore(); renderAnnouncements(); renderLogs(); updateDashboard(); }
+        
+        function updateDashboard() {
+            document.getElementById('stat-players').innerText = players.length;
+            document.getElementById('stat-items').innerText = storeItems.length;
+            document.getElementById('stat-auctions').innerText = auctions.length;
+        }
+
+        function renderLogs() {
+            const logContainer = document.getElementById('system-log');
+            logContainer.innerHTML = '';
+            systemLogs.slice(0, 8).forEach(log => {
+                const time = new Date(log.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                logContainer.innerHTML += `<p><span class="log-time">[${time}]</span> ${log.msg}</p>`;
+            });
+        }
+
+        // --- PLAYERS ---
+        function renderPlayers() {
+            const tbody = document.getElementById('player-table-body');
+            tbody.innerHTML = '';
+            players.forEach(p => {
+                let statusClass = p.status === 'Active' ? 'status-active' : (p.status === 'Banned' ? 'status-banned' : 'status-offline');
+                tbody.innerHTML += `<tr><td>#${p.id}</td><td style="font-weight:600">${p.user}</td><td style="color:#fbbf24">${p.credits}</td><td style="color:var(--crystal)">${p.crystals}</td><td><span class="status-badge ${statusClass}">${p.status}</span></td><td><button class="btn-sm btn-primary" onclick="openPlayerEdit(${p.id})">Edit</button></td></tr>`;
+            });
+        }
+        function openPlayerEdit(id) {
+            let p = players.find(x => x.id === id);
+            editingPlayerId = id;
+            document.getElementById('modal-username').innerText = p.user;
+            document.getElementById('modal-credits').value = p.credits;
+            document.getElementById('modal-crystals').value = p.crystals;
+            document.getElementById('modal-status').value = p.status;
+            document.getElementById('player-modal').classList.remove('hidden');
+        }
+        function savePlayerChanges() {
+            let p = players.find(x => x.id === editingPlayerId);
+            const updated = {
+                ...p,
+                credits: parseInt(document.getElementById('modal-credits').value),
+                crystals: parseInt(document.getElementById('modal-crystals').value),
+                status: document.getElementById('modal-status').value
+            };
+            socket.emit('admin:update_player', updated);
+            closeModal('player-modal');
+        }
+
+        // --- STORE & ANNOUNCEMENTS ---
+        function renderStore() {
+            const tbody = document.getElementById('store-table-body');
+            tbody.innerHTML = '';
+            storeItems.forEach(item => {
+                tbody.innerHTML += `<tr><td>${item.name}</td><td style="color:#fbbf24">${item.price}</td><td>${item.stock}</td></tr>`;
+            });
+        }
+        function addNewStoreItem() {
+            const name = document.getElementById('new-item-name').value;
+            const price = document.getElementById('new-item-price').value;
+            const stock = document.getElementById('new-item-stock').value;
+            if(name && price) {
+                socket.emit('admin:add_item', { id: Date.now(), name, price, stock, status: 'Available', img: 'https://placehold.co/100x100' });
+            }
+        }
+        function renderAnnouncements() {
+            const list = document.getElementById('announcement-list');
+            list.innerHTML = '';
+            announcements.forEach(a => {
+                list.innerHTML += `<tr><td>${new Date(a.id).toLocaleDateString()}</td><td>${a.title}</td></tr>`;
+            });
+        }
+        function postAnnouncement() {
+            const title = document.getElementById('announce-title').value;
+            const body = document.getElementById('announce-body').value;
+            if(title) {
+                socket.emit('admin:post_announcement', { id: Date.now(), title, content: body });
+                document.getElementById('announce-title').value = '';
+                document.getElementById('announce-body').value = '';
+            }
+        }
+
+        // --- UTILS ---
+        function switchView(viewName, navEl) {
+            document.querySelectorAll('.main-content > div').forEach(div => div.classList.add('hidden'));
+            document.getElementById('view-' + viewName).classList.remove('hidden');
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            navEl.classList.add('active');
+        }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    </script>
+</body>
+</html>
