@@ -13,15 +13,15 @@
     <style>
         :root {
             /* DARK GAMER PALETTE */
-            --bg-app: #121214;         /* Very dark background */
-            --bg-panel: #1e1e24;       /* Panel background */
+            --bg-app: #121214;         
+            --bg-panel: #1e1e24;       
             --bg-panel-hover: #2a2a32; 
-            --accent-primary: #6366f1; /* Purple Brand */
+            --accent-primary: #6366f1; /* Purple */
             --accent-glow: rgba(99, 102, 241, 0.4);
-            --accent-secondary: #fbbf24; /* Yellow Brand */
+            --accent-secondary: #fbbf24; /* Yellow */
             --text-main: #ffffff;
             --text-muted: #a1a1aa;
-            --radius-lg: 30px;         /* Super rounded corners like reference */
+            --radius-lg: 30px;         
             --radius-sm: 15px;
         }
 
@@ -32,7 +32,7 @@
             color: var(--text-main); 
             height: 100vh; 
             display: flex; 
-            padding: 20px; /* Floating app feel */
+            padding: 20px; 
             gap: 20px;
             overflow: hidden;
         }
@@ -80,7 +80,6 @@
             box-shadow: 0 5px 15px var(--accent-glow);
         }
         
-        /* Tooltip on hover */
         .nav-item::after {
             content: attr(data-tooltip);
             position: absolute; left: 70px;
@@ -90,6 +89,7 @@
             opacity: 0; pointer-events: none;
             transition: 0.2s; white-space: nowrap;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 101;
         }
         .nav-item:hover::after { opacity: 1; transform: translateX(5px); }
 
@@ -97,7 +97,7 @@
         /* --- 2. MAIN DASHBOARD AREA --- */
         .app-container {
             flex: 1;
-            background: var(--bg-app); /* Matches body for transparency feel */
+            background: var(--bg-app);
             border-radius: var(--radius-lg);
             display: flex;
             flex-direction: column;
@@ -150,13 +150,13 @@
             grid-template-columns: 2.5fr 1fr; /* Main Feed vs Right Sidebar */
             gap: 20px;
             overflow-y: auto;
-            padding-right: 10px; /* Scrollbar space */
+            padding-right: 10px;
         }
 
-        /* --- LEFT COLUMN (HERO + ACTIONS) --- */
+        /* --- LEFT COLUMN --- */
         .feed-column { display: flex; flex-direction: column; gap: 25px; }
 
-        /* HERO BANNER (Matches Assassin's Creed Card) */
+        /* HERO BANNER */
         .hero-banner {
             height: 300px;
             border-radius: var(--radius-lg);
@@ -177,12 +177,10 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
 
-        /* SECTION HEADERS */
+        /* CARDS */
         .sec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .sec-title { font-family: 'Sora'; font-size: 1.2rem; font-weight: 700; }
-        .see-all { font-size: 0.9rem; color: var(--text-muted); cursor: pointer; }
-
-        /* HORIZONTAL SCROLL / GRID SECTIONS */
+        
         .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; }
 
         .gamer-card {
@@ -196,10 +194,10 @@
         .gamer-card:hover { transform: translateY(-5px); background: var(--bg-panel-hover); border-color: var(--accent-primary); }
         .card-img { width: 100%; height: 120px; border-radius: 10px; object-fit: cover; margin-bottom: 15px; }
         .card-title { font-family: 'Sora'; font-weight: 600; font-size: 1rem; margin-bottom: 5px; }
-        .card-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between; }
+        .card-meta { font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center; }
 
 
-        /* --- RIGHT COLUMN (LIBRARY/FRIENDS) --- */
+        /* --- RIGHT COLUMN --- */
         .sidebar-right {
             display: flex; flex-direction: column; gap: 25px;
         }
@@ -208,7 +206,6 @@
             background: var(--bg-panel);
             border-radius: var(--radius-lg);
             padding: 25px;
-            min-height: 200px;
         }
 
         .list-item {
@@ -219,16 +216,35 @@
         .list-thumb { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; }
         .list-info h4 { font-family: 'Sora'; font-size: 0.9rem; }
         .list-info span { font-size: 0.75rem; color: var(--text-muted); }
-        .status-dot { width: 8px; height: 8px; background: #10b981; border-radius: 50%; margin-left: auto; }
 
+        /* REDEEM WIDGET */
+        .redeem-widget {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.05));
+            border: 1px solid var(--accent-primary);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            text-align: center;
+        }
+        .redeem-input {
+            width: 100%; padding: 12px;
+            border-radius: 10px; border: none;
+            background: rgba(0,0,0,0.3); color: white;
+            margin: 15px 0; outline: none;
+            font-family: 'Inter';
+        }
+        .redeem-btn {
+            width: 100%; padding: 10px;
+            background: var(--accent-primary);
+            color: white; border: none; border-radius: 10px;
+            font-family: 'Sora'; font-weight: 700; cursor: pointer;
+        }
 
-        /* TAB LOGIC (Hidden Sections) */
+        /* UTILS */
         .view-section { display: none; animation: fadeIn 0.4s ease; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-
-        /* MODAL STYLES (Kept Same) */
+        /* REWARD MODAL */
         .modal-overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:999; display:flex; justify-content:center; align-items:center; backdrop-filter:blur(5px); display:none; }
         .modal-overlay.open { display:flex; }
         .reward-box { width: 800px; border-radius: 20px; overflow: hidden; border: 4px solid #fbbf24; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
@@ -244,25 +260,12 @@
 
     <div class="sidebar">
         <div class="brand-logo">S</div>
-        
-        <div class="nav-item active" onclick="switchView('home', this)" data-tooltip="Dashboard">
-            <i class="fas fa-home"></i>
-        </div>
-        <div class="nav-item" onclick="switchView('announcements', this)" data-tooltip="News">
-            <i class="fas fa-bullhorn"></i>
-        </div>
-        <div class="nav-item" onclick="switchView('store', this)" data-tooltip="Store">
-            <i class="fas fa-store"></i>
-        </div>
-        <div class="nav-item" onclick="switchView('auction', this)" data-tooltip="Auctions">
-            <i class="fas fa-gavel"></i>
-        </div>
-        <div class="nav-item" onclick="switchView('casino', this)" data-tooltip="Casino">
-            <i class="fas fa-dice"></i>
-        </div>
-        <div class="nav-item" onclick="switchView('inventory', this)" data-tooltip="Inventory">
-            <i class="fas fa-box"></i>
-        </div>
+        <div class="nav-item active" onclick="switchView('home', this)" data-tooltip="Dashboard"><i class="fas fa-home"></i></div>
+        <div class="nav-item" onclick="switchView('announcements', this)" data-tooltip="News"><i class="fas fa-bullhorn"></i></div>
+        <div class="nav-item" onclick="switchView('store', this)" data-tooltip="Store"><i class="fas fa-store"></i></div>
+        <div class="nav-item" onclick="switchView('auction', this)" data-tooltip="Auctions"><i class="fas fa-gavel"></i></div>
+        <div class="nav-item" onclick="switchView('casino', this)" data-tooltip="Casino"><i class="fas fa-dice"></i></div>
+        <div class="nav-item" onclick="switchView('inventory', this)" data-tooltip="Inventory"><i class="fas fa-box"></i></div>
     </div>
 
     <div class="app-container">
@@ -277,7 +280,6 @@
                 <div class="profile-mini">
                     <img src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" id="mini-avatar">
                     <span style="font-size:0.9rem; font-weight:600; margin-right:10px;" id="u-name-mini">Player</span>
-                    <i class="fas fa-chevron-down" style="font-size:0.7rem; color:var(--text-muted)"></i>
                 </div>
             </div>
         </div>
@@ -294,7 +296,7 @@
                             <div class="hero-stats">
                                 <div class="stat-badge"><i class="fas fa-coins" style="color:#fbbf24"></i> <span id="u-credits">0</span> Credits</div>
                                 <div class="stat-badge"><i class="fas fa-gem" style="color:#d8b4fe"></i> <span id="u-crystals">0</span> Crystals</div>
-                                <div class="stat-badge" style="background:var(--accent-primary); cursor:pointer;" onclick="openRewards()">Claim Reward</div>
+                                <div class="stat-badge" style="background:var(--accent-primary); cursor:pointer;" onclick="openRewards()">Daily Reward</div>
                             </div>
                         </div>
                     </div>
@@ -342,7 +344,12 @@
                         <div class="gamer-card" style="text-align:center; padding:30px;">
                             <i class="fas fa-dice" style="font-size:4rem; color:#fbbf24; margin-bottom:20px;"></i>
                             <h3>Slots</h3>
-                            <button class="g-btn" style="margin-top:20px; width:100%; background:var(--accent-primary); border:none; padding:10px; border-radius:10px; color:white;">Play</button>
+                            <button style="width:100%; padding:10px; background:var(--accent-primary); border:none; border-radius:10px; color:white; margin-top:15px; cursor:pointer;">Play</button>
+                        </div>
+                        <div class="gamer-card" style="text-align:center; padding:30px;">
+                            <i class="fas fa-chess-board" style="font-size:4rem; color:#ec4899; margin-bottom:20px;"></i>
+                            <h3>Roulette</h3>
+                            <button style="width:100%; padding:10px; background:var(--accent-primary); border:none; border-radius:10px; color:white; margin-top:15px; cursor:pointer;">Play</button>
                         </div>
                     </div>
                 </div>
@@ -356,6 +363,15 @@
 
             <div class="sidebar-right">
                 
+                <div class="redeem-widget">
+                    <i class="fas fa-gift" style="font-size:2rem; color:var(--accent-secondary); margin-bottom:10px;"></i>
+                    <h3 style="font-family:'Sora'; margin-bottom:5px;">Redeem Code</h3>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">Have a gift code? Enter it below.</p>
+                    <input type="text" id="code-in" class="redeem-input" placeholder="SNT-XXXX">
+                    <button class="redeem-btn" onclick="redeem()">Redeem</button>
+                    <p id="redeem-msg" style="margin-top:10px; font-size:0.8rem;"></p>
+                </div>
+
                 <div class="mini-section">
                     <div class="sec-header">
                         <div class="sec-title">My Library</div>
@@ -374,13 +390,11 @@
                         <div class="list-item">
                             <div class="list-thumb" style="background:#10b981; display:grid; place-items:center;"><i class="fas fa-gavel"></i></div>
                             <div class="list-info"><h4>New Bid</h4><span>Dragon Sword</span></div>
-                            <div class="status-dot"></div>
                         </div>
                     </div>
                 </div>
 
             </div>
-
         </div>
     </div>
 
@@ -408,7 +422,6 @@
         const socket = io();
         let myUser = null;
 
-        // Auto Login
         socket.emit('player:login', 'tussday');
 
         socket.on('player:login_success', u => { myUser = u; render(null); });
@@ -416,79 +429,48 @@
             if(myUser) myUser = db.players.find(p => p.id === myUser.id) || myUser;
             render(db);
         });
+        socket.on('redeem_success', msg => { document.getElementById('redeem-msg').innerText = msg; document.getElementById('redeem-msg').style.color = '#10b981'; });
+        socket.on('redeem_fail', msg => { document.getElementById('redeem-msg').innerText = msg; document.getElementById('redeem-msg').style.color = '#ef4444'; });
 
         function render(db) {
             if(!myUser) return;
             
-            // PROFILE
             document.getElementById('u-name-mini').innerText = myUser.user;
             document.getElementById('u-name-hero').innerText = myUser.user;
             document.getElementById('u-credits').innerText = myUser.credits.toLocaleString();
             document.getElementById('u-crystals').innerText = myUser.crystals.toLocaleString();
 
-            // MINI INVENTORY (Right Sidebar)
             const miniInv = document.getElementById('mini-inv-list');
             miniInv.innerHTML = '';
             if(myUser.inventory.length === 0) miniInv.innerHTML = '<span style="color:var(--text-muted); font-size:0.8rem;">Empty</span>';
             myUser.inventory.slice(0, 4).forEach(i => {
-                miniInv.innerHTML += `
-                <div class="list-item">
-                    <img src="${i.img}" class="list-thumb">
-                    <div class="list-info"><h4>${i.name}</h4><span>Item</span></div>
-                    <div class="status-dot"></div>
-                </div>`;
+                miniInv.innerHTML += `<div class="list-item"><img src="${i.img}" class="list-thumb"><div class="list-info"><h4>${i.name}</h4><span>Item</span></div></div>`;
             });
 
-            // MAIN INVENTORY GRID
             const mainInv = document.getElementById('inv-grid-main');
             mainInv.innerHTML = '';
             myUser.inventory.forEach(i => {
-                mainInv.innerHTML += `
-                <div class="gamer-card">
-                    <img src="${i.img}" class="card-img">
-                    <div class="card-title">${i.name}</div>
-                    <div class="card-meta"><span>Owned</span></div>
-                </div>`;
+                mainInv.innerHTML += `<div class="gamer-card"><img src="${i.img}" class="card-img"><div class="card-title">${i.name}</div><div class="card-meta"><span>Owned</span></div></div>`;
             });
 
             if(db) {
-                // STORE
                 const st = document.getElementById('store-grid'); st.innerHTML = '';
                 db.storeItems.forEach(i => {
                     if(i.status === 'Available')
-                    st.innerHTML += `
-                    <div class="gamer-card">
-                        <img src="${i.img}" class="card-img">
-                        <div class="card-title">${i.name}</div>
-                        <div class="card-meta"><span style="color:#fbbf24">${i.price} Credits</span></div>
-                        <button style="width:100%; margin-top:10px; padding:8px; background:var(--accent-primary); border:none; border-radius:6px; color:white; cursor:pointer;" onclick="socket.emit('player:buy_item', {userId:${myUser.id}, itemId:${i.id}})">Buy</button>
-                    </div>`;
+                    st.innerHTML += `<div class="gamer-card"><img src="${i.img}" class="card-img"><div class="card-title">${i.name}</div><div class="card-meta"><span style="color:#fbbf24">${i.price} Credits</span></div><button style="width:100%; margin-top:10px; padding:8px; background:var(--accent-primary); border:none; border-radius:6px; color:white; cursor:pointer;" onclick="socket.emit('player:buy_item', {userId:${myUser.id}, itemId:${i.id}})">Buy</button></div>`;
                 });
 
-                // AUCTIONS
                 const au = document.getElementById('auc-grid'); au.innerHTML = '';
                 db.auctions.forEach(a => {
                     if(a.status === 'Active') {
                         const min = parseInt(a.bid) + 100;
-                        au.innerHTML += `
-                        <div class="gamer-card">
-                            <img src="${a.img}" class="card-img">
-                            <div class="card-title">${a.item}</div>
-                            <div class="card-meta"><span style="color:#fbbf24">Bid: ${a.bid}</span></div>
-                            <button style="width:100%; margin-top:10px; padding:8px; background:var(--bg-panel-hover); border:1px solid white; border-radius:6px; color:white; cursor:pointer;" onclick="socket.emit('player:place_bid', {userId:${myUser.id}, aucId:${a.id}, bid:${min}})">Bid ${min}</button>
-                        </div>`;
+                        au.innerHTML += `<div class="gamer-card"><img src="${a.img}" class="card-img"><div class="card-title">${a.item}</div><div class="card-meta"><span style="color:#fbbf24">Bid: ${a.bid}</span></div><button style="width:100%; margin-top:10px; padding:8px; background:var(--bg-panel-hover); border:1px solid white; border-radius:6px; color:white; cursor:pointer;" onclick="socket.emit('player:place_bid', {userId:${myUser.id}, aucId:${a.id}, bid:${min}})">Bid ${min}</button></div>`;
                     }
                 });
-                
-                // ANNOUNCEMENTS
+
                 const news = document.getElementById('news-container'); news.innerHTML = '';
                 db.announcements.forEach(n => {
-                    news.innerHTML += `
-                    <div class="gamer-card" style="cursor:default;">
-                        <div class="card-meta"><span>${new Date(n.id).toLocaleDateString()}</span></div>
-                        <div class="card-title" style="font-size:1.2rem; margin:10px 0;">${n.title}</div>
-                        <p style="color:var(--text-muted); font-size:0.9rem;">${n.content}</p>
-                    </div>`;
+                    news.innerHTML += `<div class="gamer-card" style="cursor:default;"><div class="card-meta"><span>${new Date(n.id).toLocaleDateString()}</span></div><div class="card-title" style="font-size:1.2rem; margin:10px 0;">${n.title}</div><p style="color:var(--text-muted); font-size:0.9rem;">${n.content}</p></div>`;
                 });
             }
         }
@@ -496,11 +478,7 @@
         function switchView(viewId, el) {
             document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
             document.getElementById('view-'+viewId).classList.add('active');
-            
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-                el.classList.add('active');
-            }
+            if(el) { document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); el.classList.add('active'); }
         }
 
         function openRewards() { document.getElementById('rewards-modal').classList.add('open'); }
@@ -509,6 +487,10 @@
             document.getElementById('btn-claim').innerText = 'CLAIMED!';
             document.getElementById('btn-claim').disabled = true;
             setTimeout(() => document.getElementById('rewards-modal').classList.remove('open'), 1000);
+        }
+        function redeem() {
+            const code = document.getElementById('code-in').value;
+            socket.emit('player:redeem_code', { userId: myUser.id, code });
         }
     </script>
 </body>
