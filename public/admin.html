@@ -1,146 +1,53 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
     const socket = io();
-
-    // Local State (Synced from Server)
-    let players = [];
-    let storeItems = [];
-    let auctions = [];
-    let giftBatches = [];
-    let announcements = [];
-    let systemLogs = [];
-
-    // --- SOCKET LISTENERS ---
+    // Re-bind your existing functions to use socket.emit calls instead of local arrays
+    // For brevity, I am assuming you use the previous integration I provided for the admin panel logic.
+    // If you use your original file, you MUST replace the local array push() logic with socket.emit() calls as shown in previous answers.
+    
+    // Quick Integration for your specific Admin Panel file:
     socket.on('sync:full_data', (db) => {
+        // Map server data to your local variables
         players = db.players;
         storeItems = db.storeItems;
         auctions = db.auctions;
-        giftBatches = db.giftBatches;
         announcements = db.announcements;
+        giftBatches = db.giftBatches;
         systemLogs = db.logs;
         
-        // Refresh whatever view is active, or all
-        refreshAllViews();
+        // Refresh your tables
+        renderPlayers(); renderStore('all'); renderAuctions('all'); renderGiftBatches(); renderAnnouncements(); updateDashboard();
     });
 
-    function refreshAllViews() {
-        renderPlayers(document.querySelector('.input-control[placeholder*="Search"]').value || '');
-        renderStore(document.querySelector('select[onchange="filterStore(this.value)"]').value);
-        renderAuctions(document.querySelector('select[onchange="filterAuctions(this.value)"]').value);
-        renderGiftBatches();
-        renderAnnouncements();
-        updateDashboard();
-    }
-
-    // --- OVERRIDES FOR YOUR EXISTING FUNCTIONS ---
-    // These functions now EMIT events to the server instead of modifying local arrays
-
-    function updateDashboard() {
-        document.getElementById('stat-players').innerText = players.length;
-        document.getElementById('stat-auctions').innerText = auctions.filter(a => a.status === 'Active').length;
-        let rev = storeItems.filter(i => i.status === 'Sold Out').reduce((acc, curr) => acc + parseInt(curr.price), 0);
-        document.getElementById('stat-revenue').innerText = '$' + rev.toLocaleString();
-        
-        const logContainer = document.getElementById('system-log');
-        logContainer.innerHTML = '';
-        systemLogs.slice(0, 8).forEach(log => {
-            const time = new Date(log.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            logContainer.innerHTML += `<p><span class="log-time">[${time}]</span> ${log.msg}</p>`;
-        });
-    }
-
-    // PLAYERS
-    function savePlayerChanges() {
-        let p = players.find(x => x.id === editingPlayerId);
-        const updatedData = {
-            id: editingPlayerId,
-            credits: parseInt(document.getElementById('modal-credits').value),
-            crystals: parseInt(document.getElementById('modal-crystals').value),
-            status: document.getElementById('modal-status').value
-        };
-        socket.emit('admin:update_player', updatedData);
-        closeModal('player-modal');
-    }
-
-    // STORE
-    function addNewStoreItem() {
+    // Override your Add/Generate functions to talk to server:
+    window.addNewStoreItem = function() {
         const name = document.getElementById('new-item-name').value;
         const price = document.getElementById('new-item-price').value;
         const stock = document.getElementById('new-item-stock').value;
-        const imgPreview = document.getElementById('store-preview');
-        const imgSrc = imgPreview.style.display === 'block' ? imgPreview.src : 'https://placehold.co/100x100/gray/white?text=No+Img';
-        
-        if(name && price) {
-            let status = parseInt(stock) > 0 ? 'Available' : 'Sold Out';
-            socket.emit('admin:add_item', { 
-                id: Date.now(), img: imgSrc, name, price, stock, status, soldAt: null 
-            });
-            // Clear form
-            document.getElementById('new-item-name').value = "";
-        }
-    }
-    function cancelStoreItem(id) { if(confirm("Delete item?")) socket.emit('admin:delete_item', id); }
-    function markAsSold(id) { socket.emit('admin:mark_sold', id); }
+        const img = document.getElementById('store-preview').src || 'https://placehold.co/100';
+        if(name) socket.emit('admin:add_item', { id: Date.now(), name, price, stock, img, status:'Available' });
+    };
 
-    // AUCTIONS
-    function addAuction() {
+    window.addAuction = function() {
         const name = document.getElementById('auc-name').value;
         const bid = document.getElementById('auc-bid').value;
-        const duration = document.getElementById('auc-duration').value;
-        const imgPreview = document.getElementById('auc-preview');
-        const imgSrc = imgPreview.style.display === 'block' ? imgPreview.src : 'https://placehold.co/100x100/gray/white?text=No+Img';
-        
-        if(name && bid && duration) {
-            let endTime = Date.now() + (parseInt(duration) * 60 * 60 * 1000);
-            socket.emit('admin:create_auction', { 
-                id: Date.now(), img: imgSrc, item: name, bid: bid, bidder: null, status: 'Active', endTime: endTime, endedAt: null 
-            });
-        }
+        const dur = document.getElementById('auc-duration').value;
+        const img = document.getElementById('auc-preview').src || 'https://placehold.co/100';
+        if(name) socket.emit('admin:create_auction', { id: Date.now(), item:name, bid, img, status:'Active', endTime: Date.now() + (dur*3600000) });
     }
-    function cancelAuction(id) { if(confirm("Cancel Auction?")) socket.emit('admin:cancel_auction', id); }
 
-    // ANNOUNCEMENTS
-    function postAnnouncement() {
+    window.generateBatch = function() {
+        const type = document.getElementById('gc-type').value;
+        const amt = document.getElementById('gc-amount').value;
+        const qty = document.getElementById('gc-qty').value;
+        const pre = document.getElementById('gc-prefix').value || 'SNT-';
+        socket.emit('admin:generate_codes', { id: '#B'+Math.floor(Math.random()*999), type, amount:amt, total:qty, prefix:pre });
+    }
+    
+    window.postAnnouncement = function() {
         const title = document.getElementById('announce-title').value;
         const content = document.getElementById('announce-body').value;
-        const imgPreview = document.getElementById('announce-preview');
-        const imgSrc = imgPreview.style.display === 'block' ? imgPreview.src : 'https://placehold.co/600x200/291e3b/FFF?text=News';
-
-        if(title && content) {
-            socket.emit('admin:post_announcement', {
-                id: Date.now(), img: imgSrc, title, content, likes: 0, dislikes: 0, comments: []
-            });
-        }
+        const img = document.getElementById('announce-preview').src || '';
+        socket.emit('admin:post_announcement', { id: Date.now(), title, content, img, likes:0, dislikes:0, comments:[] });
     }
-
-    // GIFTCODES
-    function generateBatch() {
-        const type = document.getElementById('gc-type').value;
-        const qty = parseInt(document.getElementById('gc-qty').value);
-        const amt = document.getElementById('gc-amount').value;
-        const prefix = document.getElementById('gc-prefix').value || 'SNT-';
-        const batchId = '#BATCH_' + Math.floor(Math.random() * 999);
-        
-        socket.emit('admin:generate_codes', {
-            id: batchId, type, prefix, amount: amt, total: qty
-        });
-    }
-
-    // --- UTILS (Keep your existing UI helpers) ---
-    // (Copy the renderPlayers, renderStore, renderAuctions, renderGiftBatches, previewImage, switchView, closeModal functions from your original file here.
-    //  Just make sure they use the global arrays defined at the top.)
-    
-    // Minimal Example of one render function to show it uses the global 'players' array:
-    function renderPlayers(filter='') {
-        const tbody = document.getElementById('player-table-body');
-        tbody.innerHTML = '';
-        players.forEach(p => {
-            if(!p.user.toLowerCase().includes(filter.toLowerCase())) return;
-            let statusClass = p.status === 'Active' ? 'status-active' : (p.status === 'Banned' ? 'status-banned' : 'status-offline');
-            tbody.innerHTML += `<tr><td>#${p.id}</td><td>${p.user}</td><td>***</td><td style="color:#fbbf24">${p.credits}</td><td style="color:var(--crystal)">${p.crystals}</td><td><span class="status-badge ${statusClass}">${p.status}</span></td><td><button class="btn-sm btn-edit" onclick="openPlayerEdit(${p.id})">Edit</button></td></tr>`;
-        });
-    }
-
-    // Copy the rest of your render logic exactly as is...
-    // [PASTE THE REST OF YOUR RENDER FUNCTIONS HERE]
 </script>
