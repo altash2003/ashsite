@@ -3,143 +3,530 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNT Player</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>SNT Player Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Russo+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* [YOUR ORIGINAL CSS - CONDENSED] */
-        :root { --bg-body:#0f172a; --bg-card:#1e293b; --primary:#6366f1; --text-main:#f8fafc; }
-        body { background:var(--bg-body); color:var(--text-main); height:100vh; display:flex; font-family:'Outfit',sans-serif; overflow:hidden; }
-        .sidebar { width:100px; padding:2rem 0; background:rgba(15,23,42,0.5); display:flex; flex-direction:column; align-items:center; }
-        .main-area { flex:1; padding:2rem; overflow-y:auto; }
-        .nav-icon { width:50px; height:50px; border-radius:14px; display:grid; place-items:center; margin-bottom:1rem; cursor:pointer; color:#94a3b8; }
-        .nav-icon.active { background:rgba(99,102,241,0.1); color:var(--primary); }
-        .top-bar { display:flex; justify-content:space-between; margin-bottom:2rem; }
-        .card { background:var(--bg-card); border-radius:20px; padding:1.5rem; border:1px solid rgba(255,255,255,0.05); }
-        .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:1.5rem; }
-        .hidden { display:none !important; }
-        .btn { background:linear-gradient(135deg, #6366f1, #a855f7); color:white; border:none; padding:10px 20px; border-radius:12px; cursor:pointer; width:100%; margin-top:10px; }
-        .btn-green { background:#10b981; }
-        /* Inventory Item */
-        .inv-item { text-align:center; padding:10px; background:rgba(255,255,255,0.03); border-radius:10px; }
+        :root {
+            --bg-body: #110022; /* Very dark purple/black */
+            --card-bg: #240a4a; /* Deep purple card */
+            --primary: #fbbf24;
+            --text-white: #ffffff;
+            --sunburst-purple-1: #7c3aed;
+            --sunburst-purple-2: #6d28d9;
+            --sunburst-yellow-1: #fbbf24;
+            --sunburst-yellow-2: #d97706;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-white); 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex;
+        }
+
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: 90px;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 2rem;
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        .nav-icon {
+            width: 50px; height: 50px;
+            border-radius: 12px;
+            display: grid; place-items: center;
+            font-size: 1.4rem; color: #a78bfa;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .nav-icon:hover, .nav-icon.active {
+            background: #4c1d95;
+            color: white;
+            box-shadow: 0 0 15px #6d28d9;
+        }
+
+        /* --- MAIN AREA --- */
+        .main-area {
+            flex: 1;
+            padding: 3rem;
+            overflow-y: auto;
+            background: radial-gradient(circle at top right, #3b0764 0%, #110022 60%);
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- PROFILE CARD DESIGN (Matching Image 1) --- */
+        .welcome-text {
+            font-family: 'Russo One', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .profile-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .profile-left { flex: 1; }
+        
+        .profile-title {
+            font-family: 'Russo One', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Badges */
+        .badges-row { display: flex; gap: 10px; margin-bottom: 2rem; flex-wrap: wrap; }
+        .badge {
+            padding: 6px 16px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .badge-staff { background: linear-gradient(90deg, #6366f1, #8b5cf6); box-shadow: 0 0 15px rgba(99, 102, 241, 0.4); }
+        .badge-million { 
+            background: #fbbf24; color: #000; 
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+            border: 1px solid #fff;
+        }
+        .badge-radiant { background: linear-gradient(90deg, #06b6d4, #d946ef); box-shadow: 0 0 15px rgba(217, 70, 239, 0.4); }
+
+        /* Stats */
+        .stat-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: rgba(0,0,0,0.2);
+            padding: 10px 20px;
+            border-radius: 12px;
+            width: fit-content;
+            min-width: 300px;
+        }
+        .icon-coin { color: #fbbf24; font-size: 1.8rem; filter: drop-shadow(0 0 5px #fbbf24); }
+        .icon-gem { color: #d8b4fe; font-size: 1.8rem; filter: drop-shadow(0 0 5px #d8b4fe); }
+
+        /* Avatar & Footer */
+        .profile-avatar-container {
+            width: 220px; height: 220px;
+            border-radius: 50%;
+            background: #1e1b4b;
+            border: 5px solid #6366f1;
+            box-shadow: 0 0 30px rgba(99, 102, 241, 0.3);
+            overflow: hidden;
+            position: relative;
+        }
+        .profile-avatar-container img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .profile-footer {
+            margin-top: 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ui-dots { display: flex; gap: 8px; }
+        .dot { width: 15px; height: 15px; border-radius: 50%; }
+        .social-icons { display: flex; gap: 15px; font-size: 1.5rem; }
+        .social-btn { cursor: pointer; transition: 0.2s; opacity: 0.8; }
+        .social-btn:hover { transform: scale(1.1); opacity: 1; }
+
+        /* --- DAILY REWARD MODAL (Matching Image 2) --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none; transition: 0.3s;
+            backdrop-filter: blur(5px);
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+        .reward-card-container {
+            width: 850px;
+            background: #9333ea; /* Purple Body */
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            border: 4px solid #facc15;
+            transform: scale(0.9); transition: 0.3s;
+        }
+        .modal-overlay.open .reward-card-container { transform: scale(1); }
+
+        .reward-header {
+            background: #fbbf24; /* Yellow Header */
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+            border-bottom: 4px solid #b45309;
+        }
+        .reward-title {
+            font-family: 'Russo One', sans-serif;
+            color: #1e1b4b;
+            font-size: 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.4);
+        }
+        .reward-subtitle { color: #451a03; font-weight: 700; margin-top: 5px; }
+        .close-btn {
+            position: absolute; right: 20px; top: 20px;
+            background: #dc2626; color: white;
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            border: 2px solid white;
+            font-weight: bold; font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #991b1b;
+        }
+        .close-btn:active { transform: translateY(4px); box-shadow: none; }
+
+        .reward-body {
+            padding: 2rem;
+            background: linear-gradient(180deg, #a855f7 0%, #7e22ce 100%);
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .days-grid {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            align-items: flex-end; /* Align bottom so active card pops up */
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+
+        /* The Day Cards with Sunburst Effect */
+        .day-card {
+            width: 90px; height: 130px;
+            border-radius: 10px;
+            border: 2px solid rgba(255,255,255,0.5);
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+            padding: 10px 5px;
+            text-align: center;
+            position: relative;
+            /* Purple Sunburst */
+            background: repeating-conic-gradient(
+                from 0deg, 
+                #7c3aed 0deg 15deg, 
+                #6d28d9 15deg 30deg
+            );
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .day-card.claimed {
+            filter: grayscale(0.6) brightness(0.8);
+        }
+        .day-card.claimed::after {
+            content: "Claimed";
+            position: absolute; top: 10px;
+            font-size: 0.7rem; font-weight: bold;
+            background: rgba(0,0,0,0.5); padding: 2px 6px; border-radius: 4px;
+        }
+
+        .day-card.active {
+            width: 110px; height: 150px; /* Bigger */
+            border: 3px solid white;
+            z-index: 10;
+            /* Yellow Sunburst */
+            background: repeating-conic-gradient(
+                from 0deg, 
+                #fbbf24 0deg 15deg, 
+                #d97706 15deg 30deg
+            );
+            box-shadow: 0 0 30px #fbbf24;
+            transform: translateY(-10px);
+        }
+
+        .day-text { font-weight: bold; font-size: 0.9rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .day-card.active .day-text { color: #451a03; font-size: 1.1rem; text-shadow: none; }
+        
+        .reward-amt { font-family: 'Russo One', sans-serif; font-size: 0.9rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .day-card.active .reward-amt { color: #451a03; font-size: 1.2rem; text-shadow: none; }
+
+        .claim-btn-large {
+            background: #fbbf24;
+            color: #451a03;
+            font-family: 'Russo One', sans-serif;
+            font-size: 1.5rem;
+            padding: 15px 80px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #b45309, 0 15px 20px rgba(0,0,0,0.4);
+            transition: 0.1s;
+        }
+        .claim-btn-large:active { transform: translateY(6px); box-shadow: 0 0 0 #b45309; }
+        .claim-btn-large:disabled { background: #9ca3af; color: #4b5563; box-shadow: none; cursor: not-allowed; transform: none; }
+
+        /* --- Generic Grid for other tabs --- */
+        .grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .generic-card { background: var(--card-bg); padding: 1.5rem; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        .btn-action { background: #6366f1; width: 100%; padding: 10px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-top: 10px; }
+
     </style>
 </head>
 <body>
-    <nav class="sidebar">
-        <div class="nav-icon active" onclick="setTab('home', this)"><i class="fas fa-home"></i></div>
-        <div class="nav-icon" onclick="setTab('store', this)"><i class="fas fa-store"></i></div>
-        <div class="nav-icon" onclick="setTab('auction', this)"><i class="fas fa-gavel"></i></div>
-        <div class="nav-icon" onclick="setTab('inv', this)"><i class="fas fa-box"></i></div>
-    </nav>
-    <main class="main-area">
-        <div class="top-bar">
-            <h3>Player: <span id="user-name" style="color:var(--primary)">...</span></h3>
-            <div style="background:rgba(255,255,255,0.05); padding:8px 20px; border-radius:50px; color:#fbbf24;">
-                <i class="fas fa-coins"></i> <span id="user-credits">0</span>
-            </div>
-        </div>
 
+    <nav class="sidebar">
+        <div style="font-family:'Russo One'; color:#fbbf24; font-size:1.5rem; margin-bottom:2rem; text-shadow:0 0 10px #fbbf24;">S</div>
+        <div class="nav-icon active" onclick="switchTab('home', this)"><i class="fas fa-user"></i></div>
+        <div class="nav-icon" onclick="switchTab('store', this)"><i class="fas fa-store"></i></div>
+        <div class="nav-icon" onclick="switchTab('auction', this)"><i class="fas fa-gavel"></i></div>
+        <div class="nav-icon" onclick="switchTab('inventory', this)"><i class="fas fa-box"></i></div>
+    </nav>
+
+    <div class="main-area">
+        
         <div id="tab-home">
-            <div class="card" style="margin-bottom:20px; background:linear-gradient(135deg,#1e293b,#0f172a);">
-                <h1>Welcome Back</h1>
-                <p style="color:#94a3b8; margin:10px 0;">Claim your daily reward or redeem a code.</p>
-                <div style="display:flex; gap:10px;">
-                    <button class="btn" style="width:auto;" onclick="claimDaily()">Claim Daily (+50)</button>
+            <h1 class="welcome-text">Welcome Back, <span id="welcome-user">Player</span></h1>
+            
+            <div class="profile-card">
+                <div class="profile-left">
+                    <div class="profile-title">Player Profile</div>
+                    
+                    <div class="badges-row">
+                        <div class="badge badge-staff"><i class="fas fa-shield-alt"></i> STAFF</div>
+                        <div class="badge badge-million"><i class="fas fa-crown"></i> MILLIONAIRE</div>
+                        <div class="badge badge-radiant"><i class="fas fa-gem"></i> RADIANT</div>
+                    </div>
+
+                    <div class="stats-container">
+                        <div class="stat-row">
+                            <i class="fas fa-coins icon-coin"></i>
+                            <span id="display-credits">0</span> 
+                            <span style="font-size:0.8rem; opacity:0.7; margin-left:5px;">Credits</span>
+                        </div>
+                        <div class="stat-row">
+                            <i class="fas fa-gem icon-gem"></i>
+                            <span id="display-crystals">0</span>
+                            <span style="font-size:0.8rem; opacity:0.7; margin-left:5px;">Crystals</span>
+                        </div>
+                    </div>
+
+                    <div class="profile-footer">
+                        <div class="ui-dots">
+                            <div class="dot" style="background:#e0e7ff"></div>
+                            <div class="dot" style="background:#f43f5e"></div>
+                            <div class="dot" style="background:#0ea5e9"></div>
+                            <div class="dot" style="background:#eab308"></div>
+                        </div>
+                        <div class="social-icons">
+                            <div class="social-btn" style="color:#fbbf24" onclick="openRewards()"><i class="fas fa-gift"></i></div>
+                            <div class="social-btn" style="color:#3b82f6"><i class="fab fa-facebook"></i></div>
+                            <div class="social-btn" style="color:#a855f7"><i class="fab fa-discord"></i></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="profile-right">
+                    <div class="profile-avatar-container">
+                        <img src="https://ui-avatars.com/api/?name=ST&background=0D8ABC&color=fff&size=256" alt="Avatar">
+                    </div>
                 </div>
             </div>
             
-            <div class="card">
-                <h4>Redeem Code</h4>
-                <div style="display:flex; gap:10px; margin-top:10px;">
-                    <input type="text" id="redeem-input" style="padding:10px; border-radius:8px; border:none; background:#0f172a; color:white; flex:1;" placeholder="Enter code (e.g. SNT-XXXX)">
-                    <button class="btn btn-green" style="width:auto; margin:0;" onclick="redeemCode()">Redeem</button>
+            <div style="margin-top: 2rem; max-width: 900px;">
+                <h3 style="margin-bottom:10px;">Redeem Code</h3>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="redeem-input" placeholder="Enter Giftcode..." style="flex:1; padding: 15px; border-radius: 12px; border:none; background: rgba(0,0,0,0.3); color: white; font-size:1rem;">
+                    <button onclick="redeemCode()" style="padding: 0 30px; border-radius: 12px; border:none; background: #10b981; color:white; font-weight:bold; cursor:pointer;">Redeem</button>
                 </div>
-                <p id="redeem-msg" style="margin-top:10px; font-size:0.9rem;"></p>
+                <p id="redeem-msg" style="margin-top:5px; height:20px;"></p>
             </div>
         </div>
 
         <div id="tab-store" class="hidden">
-            <h2>Store</h2><br>
-            <div class="grid" id="store-grid"></div>
+            <h1 class="welcome-text">Item Store</h1>
+            <div class="grid-cards" id="store-grid"></div>
         </div>
 
         <div id="tab-auction" class="hidden">
-            <h2>Auctions</h2><br>
-            <div class="grid" id="auc-grid"></div>
+            <h1 class="welcome-text">Auction House</h1>
+            <div class="grid-cards" id="auc-grid"></div>
         </div>
 
-        <div id="tab-inv" class="hidden">
-            <h2>My Inventory</h2><br>
-            <div class="grid" id="inv-grid"></div>
+        <div id="tab-inventory" class="hidden">
+            <h1 class="welcome-text">My Inventory</h1>
+            <div class="grid-cards" id="inv-grid"></div>
         </div>
-    </main>
+
+    </div>
+
+    <div id="rewards-modal" class="modal-overlay">
+        <div class="reward-card-container">
+            <div class="reward-header">
+                <div class="reward-title">Daily Reward</div>
+                <div class="reward-subtitle">Come back every day to get better rewards!</div>
+                <button class="close-btn" onclick="closeRewards()">X</button>
+            </div>
+            
+            <div class="reward-body">
+                <div class="days-grid">
+                    <div class="day-card claimed">
+                        <div class="day-text">Day 1</div>
+                        <div class="reward-amt">100<br>Coins</div>
+                    </div>
+                    <div class="day-card claimed">
+                        <div class="day-text">Day 2</div>
+                        <div class="reward-amt">500<br>Coins</div>
+                    </div>
+                    <div class="day-card claimed">
+                        <div class="day-text">Day 3</div>
+                        <div class="reward-amt">1,000<br>Coins</div>
+                    </div>
+                    <div class="day-card active">
+                        <div class="day-text">Day 4</div>
+                        <div class="reward-amt">5,000<br>Coins</div>
+                    </div>
+                    <div class="day-card">
+                        <div class="day-text">Day 5</div>
+                        <div class="reward-amt">10,000<br>Coins</div>
+                    </div>
+                    <div class="day-card">
+                        <div class="day-text">Day 6</div>
+                        <div class="reward-amt">50,000<br>Coins</div>
+                    </div>
+                     <div class="day-card">
+                        <div class="day-text">Day 7</div>
+                        <div class="reward-amt">100k<br>Coins</div>
+                    </div>
+                </div>
+
+                <button class="claim-btn-large" id="btn-claim-reward" onclick="claimDailyReward()">CLAIM</button>
+            </div>
+        </div>
+    </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
         let myUser = null;
-        
-        // AUTO LOGIN for Demo
-        socket.emit('player:login', 'ashleychan'); 
 
-        socket.on('player:login_success', u => { myUser = u; renderUI(); });
-        
-        // Sync Updates
-        socket.on('sync:players', list => {
+        // Auto-login (Demo)
+        socket.emit('player:login', 'ashleychan');
+
+        socket.on('player:login_success', (u) => { myUser = u; updateUI(); });
+        socket.on('sync:players', (list) => {
             if(myUser) {
-                const updated = list.find(x => x.id === myUser.id);
-                if(updated) { myUser = updated; renderUI(); }
+                const me = list.find(x => x.id === myUser.id);
+                if(me) { myUser = me; updateUI(); }
             }
         });
-        
-        socket.on('sync:store', list => {
-            const el = document.getElementById('store-grid'); el.innerHTML = '';
+
+        // Store Sync
+        socket.on('sync:store', (list) => {
+            const grid = document.getElementById('store-grid'); grid.innerHTML = '';
             list.forEach(i => {
-                const btn = i.status==='Available' ? `<button class="btn" onclick="buy(${i.id})">Buy (${i.price})</button>` : `<button class="btn" disabled style="opacity:0.5">Sold Out</button>`;
-                el.innerHTML += `<div class="card"><img src="${i.img}" style="width:100%; height:120px; object-fit:cover; border-radius:10px;"><h4>${i.name}</h4>${btn}</div>`;
+                const btn = i.status === 'Available' 
+                    ? `<button class="btn-action" onclick="buy(${i.id})">Buy (${i.price})</button>` 
+                    : `<button class="btn-action" disabled style="background:#4b5563">Sold Out</button>`;
+                
+                grid.innerHTML += `
+                <div class="generic-card">
+                    <img src="${i.img}" style="width:100%; height:150px; object-fit:cover; border-radius:10px; margin-bottom:10px;">
+                    <h3>${i.name}</h3>
+                    <div style="color:#fbbf24; font-weight:bold;">${i.price} Credits</div>
+                    ${btn}
+                </div>`;
             });
         });
 
-        socket.on('sync:auctions', list => {
-            const el = document.getElementById('auc-grid'); el.innerHTML = '';
+        // Auction Sync
+        socket.on('sync:auctions', (list) => {
+            const grid = document.getElementById('auc-grid'); grid.innerHTML = '';
             list.forEach(a => {
-                const min = parseInt(a.bid)+50;
-                el.innerHTML += `<div class="card"><img src="${a.img}" style="width:100%; height:120px; object-fit:cover; border-radius:10px;"><h4>${a.item}</h4><p style="color:#fbbf24">Bid: ${a.bid}</p><p style="font-size:0.8rem; color:#94a3b8">Winner: ${a.bidder||'None'}</p><button class="btn" onclick="bid(${a.id}, ${min})">Bid ${min}</button></div>`;
+                const minBid = parseInt(a.bid) + 100;
+                grid.innerHTML += `
+                <div class="generic-card">
+                    <img src="${a.img}" style="width:100%; height:150px; object-fit:cover; border-radius:10px; margin-bottom:10px;">
+                    <h3>${a.item}</h3>
+                    <div style="color:#fbbf24;">Current: ${a.bid}</div>
+                    <div style="font-size:0.8rem; opacity:0.7; margin-bottom:5px;">Bidder: ${a.bidder || 'None'}</div>
+                    <button class="btn-action" onclick="bid(${a.id}, ${minBid})">Bid ${minBid}</button>
+                </div>`;
             });
         });
 
-        socket.on('player:redeem_result', res => {
-            const msg = document.getElementById('redeem-msg');
-            msg.innerText = res.msg;
-            msg.style.color = res.success ? '#10b981' : '#ef4444';
+        socket.on('player:redeem_result', (res) => {
+            const el = document.getElementById('redeem-msg');
+            el.innerText = res.msg;
+            el.style.color = res.success ? '#4ade80' : '#f87171';
+            if(res.success) setTimeout(() => el.innerText = '', 3000);
         });
 
-        function renderUI() {
-            document.getElementById('user-name').innerText = myUser.user;
-            document.getElementById('user-credits').innerText = myUser.credits;
+        function updateUI() {
+            if(!myUser) return;
+            document.getElementById('welcome-user').innerText = myUser.user;
+            document.getElementById('display-credits').innerText = myUser.credits.toLocaleString();
+            document.getElementById('display-crystals').innerText = myUser.crystals.toLocaleString();
             
-            // Render Inventory
-            const inv = document.getElementById('inv-grid'); inv.innerHTML = '';
-            if(myUser.inventory.length === 0) inv.innerHTML = '<p style="color:#94a3b8">No items yet.</p>';
+            // Update Inventory
+            const invGrid = document.getElementById('inv-grid'); invGrid.innerHTML = '';
+            if(myUser.inventory.length === 0) invGrid.innerHTML = '<div style="opacity:0.5; padding:20px;">Inventory is empty.</div>';
             myUser.inventory.forEach(item => {
-                inv.innerHTML += `<div class="inv-item"><img src="${item.img}" style="width:60px; height:60px; border-radius:8px;"><p>${item.name}</p></div>`;
+                invGrid.innerHTML += `
+                <div class="generic-card" style="text-align:center;">
+                    <img src="${item.img}" style="width:80px; height:80px; object-fit:cover; border-radius:10px; margin-bottom:10px;">
+                    <div>${item.name}</div>
+                </div>`;
             });
         }
 
-        // Actions
+        /* ACTIONS */
         function buy(id) { socket.emit('player:buy_item', { userId: myUser.id, itemId: id }); }
         function bid(id, amt) { socket.emit('player:place_bid', { userId: myUser.id, aucId: id, bid: amt }); }
-        function claimDaily() { socket.emit('player:claim_reward', { userId: myUser.id, day: 1, amount: 50 }); }
-        function redeemCode() { 
+        function redeemCode() {
             const code = document.getElementById('redeem-input').value;
-            socket.emit('player:redeem_code', { userId: myUser.id, code: code });
+            if(code) socket.emit('player:redeem_code', { userId: myUser.id, code: code });
         }
 
-        function setTab(t, el) {
-            document.querySelectorAll('.main-area > div').forEach(x => { if(x.id.startsWith('tab-')) x.classList.add('hidden'); });
-            document.getElementById('tab-'+t).classList.remove('hidden');
-            document.querySelectorAll('.nav-icon').forEach(x => x.classList.remove('active'));
+        /* UI LOGIC */
+        function switchTab(tab, el) {
+            document.querySelectorAll('.main-area > div').forEach(div => {
+                if(div.id.startsWith('tab-')) div.classList.add('hidden');
+            });
+            document.getElementById('tab-' + tab).classList.remove('hidden');
+            document.querySelectorAll('.nav-icon').forEach(icon => icon.classList.remove('active'));
             el.classList.add('active');
+        }
+
+        function openRewards() { document.getElementById('rewards-modal').classList.add('open'); }
+        function closeRewards() { document.getElementById('rewards-modal').classList.remove('open'); }
+        
+        function claimDailyReward() {
+            const btn = document.getElementById('btn-claim-reward');
+            btn.innerText = "CLAIMED!";
+            btn.disabled = true;
+            btn.style.background = "#d1d5db";
+            
+            // Send to server
+            socket.emit('player:claim_reward', { userId: myUser.id, day: 4, amount: 5000 });
+            
+            setTimeout(() => { closeRewards(); }, 1500);
         }
     </script>
 </body>
