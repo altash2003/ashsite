@@ -1,7 +1,6 @@
 {
-  "name": "stick-n-trade-live",
+  "name": "stick-n-trade-ultimate",
   "version": "1.0.0",
-  "description": "Real-time backend for SNT",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
